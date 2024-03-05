@@ -53,6 +53,19 @@ export type InvoicesTable = {
   status: 'pending' | 'paid';
 };
 
+export type PlayersTable = {
+  id: string;
+  name: string;
+  score: number;
+  rawScore: number;
+  games: number;
+  firstNum: number;
+  secondNum: number;
+  thirdNum: number;
+  fourthNum: number;
+  maxScore: number;
+};
+
 export type CustomersTableType = {
   id: string;
   name: string;

@@ -7,6 +7,7 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
+  PlayersTable,
 } from './definitions';
 import { formatCurrency } from './utils';
 import { unstable_noStore as noStore } from 'next/cache';
@@ -90,7 +91,7 @@ export async function fetchCardData() {
   }
 }
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 100;
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
@@ -126,6 +127,45 @@ export async function fetchFilteredInvoices(
     throw new Error('Failed to fetch invoices.');
   }
 }
+
+export async function fetchFilteredPlayers(
+  query: string,
+  currentPage: number,
+) {
+  noStore();
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const players = await sql`
+    SELECT * FROM players
+    WHERE
+      players.name ILIKE ${`%${query}%`}
+    `;
+
+    return players.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('プレイヤーの取得に失敗しました.');
+  }
+}
+
+export async function fetchPlayersPages(query: string) {
+  noStore();
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM players
+    WHERE
+      players.name ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('プレイヤーの取得に失敗しました');
+  }
+}
+
 
 export async function fetchInvoicesPages(query: string) {
   noStore();
