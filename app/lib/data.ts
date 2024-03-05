@@ -157,7 +157,6 @@ export async function fetchPlayersPages(query: string) {
     WHERE
       players.name ILIKE ${`%${query}%`}
   `;
-
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {

@@ -54,16 +54,16 @@ export type InvoicesTable = {
 };
 
 export type PlayersTable = {
-  id: string;
+  id: number;
   name: string;
   score: number;
-  rawScore: number;
+  rawscore: number;
   games: number;
-  firstNum: number;
-  secondNum: number;
-  thirdNum: number;
-  fourthNum: number;
-  maxScore: number;
+  firstnum: number;
+  secondnum: number;
+  thirdnum: number;
+  fourthnum: number;
+  maxscore: number;
 };
 
 export type CustomersTableType = {
