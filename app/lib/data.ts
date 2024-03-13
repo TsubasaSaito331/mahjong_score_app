@@ -133,13 +133,12 @@ export async function fetchFilteredPlayers(
   currentPage: number,
 ) {
   noStore();
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
     const players = await sql`
     SELECT * FROM players
-    WHERE
-      players.name ILIKE ${`%${query}%`}
+    WHERE deleted = false AND name ILIKE ${`%${query}%`}
+    ORDER BY TotalScore DESC;
     `;
 
     return players.rows;
