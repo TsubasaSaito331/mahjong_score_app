@@ -12,7 +12,6 @@ import {
   resisterGame,
   updatePlayer,
 } from '@/app/lib/actions';
-import { Player } from './table';
 
 export function CreatePlayer() {
   const [isOpen, setIsOpen] = useState<boolean>(false);

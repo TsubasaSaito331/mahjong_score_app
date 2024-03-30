@@ -3,20 +3,7 @@
 import { useState } from 'react';
 import { DeletePlayer, UpdatePlayer } from './buttons';
 import { LuArrowDownUp } from 'react-icons/lu';
-
-export interface Player {
-  id: number;
-  name: string;
-  totalscore: number;
-  rawscore: number;
-  games: number;
-  firstnum: number;
-  secondnum: number;
-  thirdnum: number;
-  fourthnum: number;
-  maxscore: number;
-  rank: number;
-}
+import { Player } from '@/app/lib/definitions';
 
 export default function Table({ players }: { players: Player[] }) {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');

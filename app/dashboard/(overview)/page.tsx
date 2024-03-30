@@ -1,4 +1,3 @@
-import Pagination from '@/app/ui/invoices/pagination';
 import Search from '@/app/ui/search';
 import Table from '@/app/ui/dashboard/table';
 import { lusitana } from '@/app/ui/fonts';
@@ -22,7 +21,6 @@ export default async function Page({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const totalPages = await fetchPlayersPages(query);
   var players = await fetchFilteredPlayers(query, currentPage);
   const playerNames: string[] = players.map((player) => player.name);
 
@@ -41,9 +39,6 @@ export default async function Page({
       <Suspense key={query + currentPage}>
         <Table players={players} />
       </Suspense>
-      <div className="mt-5 flex w-full justify-center">
-        <Pagination totalPages={totalPages} />
-      </div>
     </div>
   );
 }
