@@ -89,3 +89,30 @@ export async function deletePlayer(id: string) {
       return { message: 'Database Error: Failed to Delete Player.' };
   }
 }
+
+export async function resisterGame(formData: FormData) {
+  // Insert data into the database
+  try {
+    await sql`
+    INSERT INTO games (Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore)
+    VALUES (
+      CURRENT_DATE,
+      ${formData.get('EplayerName') as string},
+      ${parseInt(formData.get('EplayerScore') as string)},
+      ${formData.get('SplayerName') as string},
+      ${parseInt(formData.get('SplayerScore') as string)},
+      ${formData.get('WplayerName') as string},
+      ${parseInt(formData.get('WplayerScore') as string)},
+      ${formData.get('NplayerName') as string},
+      ${parseInt(formData.get('NplayerScore') as string)}
+      )
+    `;
+  } catch (error) {
+    return {
+      message: 'Database Error : Failed to resister game.',
+    };
+  }
+  return {
+      message: 'Game resistered successfully.'
+  };
+}

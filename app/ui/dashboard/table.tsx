@@ -1,122 +1,198 @@
-import { fetchFilteredPlayers } from '@/app/lib/data';
+'use client';
+
+import { useState } from 'react';
 import { DeletePlayer, UpdatePlayer } from './buttons';
+import { LuArrowDownUp } from 'react-icons/lu';
 
-export default async function InvoicesTable({
-  query,
-  currentPage,
-}: {
-  query: string;
-  currentPage: number;
-}) {
-  var players = await fetchFilteredPlayers(query, currentPage);
+export interface Player {
+  id: number;
+  name: string;
+  totalscore: number;
+  rawscore: number;
+  games: number;
+  firstnum: number;
+  secondnum: number;
+  thirdnum: number;
+  fourthnum: number;
+  maxscore: number;
+  rank: number;
+}
 
-  const handleSort = (columnName : string) => {
-    let sortedPlayers = [...players];
-  
+export default function Table({ players }: { players: Player[] }) {
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortedPlayers, setSortedPlayers] = useState<Player[]>(players);
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handleSort = (columnName: string) => {
     switch (columnName) {
-      case 'プレイヤー':
-        sortedPlayers.sort((a, b) => a.name.localeCompare(b.name));
+      case 'rank':
+        if (sortOrder === 'desc') {
+          sortedPlayers.sort((a, b) => a.rank - b.rank);
+        } else {
+          sortedPlayers.sort((a, b) => b.rank - a.rank);
+        }
         break;
-      case 'スコア':
-        sortedPlayers.sort((a, b) => a.totalscore - b.totalscore);
+      case 'totalscore':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.totalscore - b.totalscore);
+        } else {
+          sortedPlayers.sort((a, b) => b.totalscore - a.totalscore);
+        }
         break;
-      case '素点':
-        sortedPlayers.sort((a, b) => a.rawscore - b.rawscore);
+      case 'rawscore':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.rawscore - b.rawscore);
+        } else {
+          sortedPlayers.sort((a, b) => b.rawscore - a.rawscore);
+        }
         break;
-      case '試合数':
-        sortedPlayers.sort((a, b) => a.games - b.games);
+      case 'games':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.games - b.games);
+        } else {
+          sortedPlayers.sort((a, b) => b.games - a.games);
+        }
         break;
-      case '平均着順':
-        sortedPlayers.sort((a, b) =>  {
-          const ratioA = getAvgRank(a);
-          const ratioB = getAvgRank(b);
-          if (ratioA === null && ratioB === null) return a.name.localeCompare(b.name);
-          else if (ratioA === null) return 1;
-          else if (ratioB === null) return -1;
-          else return ratioA - ratioB;
-        });
+      case 'avgRank':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => {
+            const ratioA = a.games != 0 ? getAvgRank(a) : 5;
+            const ratioB = b.games != 0 ? getAvgRank(b) : 5;
+            return ratioA! - ratioB!;
+          });
+        } else {
+          sortedPlayers.sort((a, b) => {
+            const ratioA = a.games != 0 ? getAvgRank(a) : 5;
+            const ratioB = b.games != 0 ? getAvgRank(b) : 5;
+            return ratioB! - ratioA!;
+          });
+        }
         break;
-      case '1着':
-        sortedPlayers.sort((a, b) => a.firstnum - b.firstnum);
+      case 'firstnum':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.firstnum - b.firstnum);
+        } else {
+          sortedPlayers.sort((a, b) => b.firstnum - a.firstnum);
+        }
         break;
-      case '2着':
-        sortedPlayers.sort((a, b) => a.secondnum - b.secondnum);
+      case 'secondnum':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.secondnum - b.secondnum);
+        } else {
+          sortedPlayers.sort((a, b) => b.secondnum - a.secondnum);
+        }
         break;
-      case '3着':
-        sortedPlayers.sort((a, b) => a.thirdnum - b.thirdnum);
+      case 'thirdnum':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.thirdnum - b.thirdnum);
+        } else {
+          sortedPlayers.sort((a, b) => b.thirdnum - a.thirdnum);
+        }
         break;
-      case '4着':
-        sortedPlayers.sort((a, b) => a.fourthnum - b.fourthnum);
+      case 'fourthnum':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.fourthnum - b.fourthnum);
+        } else {
+          sortedPlayers.sort((a, b) => b.fourthnum - a.fourthnum);
+        }
         break;
-      case 'トップ率':
-        sortedPlayers.sort((a, b) =>  {
-          const ratioA = getTopRatio(a);
-          const ratioB = getTopRatio(b);
-          if (ratioA === null && ratioB === null) return a.name.localeCompare(b.name);
-          else if (ratioA === null) return 1;
-          else if (ratioB === null) return -1;
-          else return ratioA.localeCompare(ratioB);
-        });
+      case 'topRatio':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => {
+            const ratioA = a.games != 0 ? getTopRatio(a) : -1;
+            const ratioB = b.games != 0 ? getTopRatio(b) : -1;
+            return ratioA! - ratioB!;
+          });
+        } else {
+          sortedPlayers.sort((a, b) => {
+            const ratioA = a.games != 0 ? getTopRatio(a) : -1;
+            const ratioB = b.games != 0 ? getTopRatio(b) : -1;
+            return ratioB! - ratioA!;
+          });
+        }
         break;
-      case '連帯率':
-        sortedPlayers.sort((a, b) =>  {
-          const ratioA = getWinRatio(a);
-          const ratioB = getWinRatio(b);
-          if (ratioA === null && ratioB === null) return a.name.localeCompare(b.name);
-          else if (ratioA === null) return 1;
-          else if (ratioB === null) return -1;
-          else return ratioA.localeCompare(ratioB);
-        });
+      case 'winRatio':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => {
+            const ratioA = a.games != 0 ? getWinRatio(a) : -1;
+            const ratioB = b.games != 0 ? getWinRatio(b) : -1;
+            return ratioA! - ratioB!;
+          });
+        } else {
+          sortedPlayers.sort((a, b) => {
+            const ratioA = a.games != 0 ? getWinRatio(a) : -1;
+            const ratioB = b.games != 0 ? getWinRatio(b) : -1;
+            return ratioB! - ratioA!;
+          });
+        }
         break;
-      case '4着回避率':
-        sortedPlayers.sort((a, b) =>  {
-          const ratioA = getFourthAvoidanceRatio(a);
-          const ratioB = getFourthAvoidanceRatio(b);
-          if (ratioA === null && ratioB === null) return a.name.localeCompare(b.name);
-          else if (ratioA === null) return 1;
-          else if (ratioB === null) return -1;
-          else return ratioA.localeCompare(ratioB);
-        });
+      case 'fourthAvoidanceRatio':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => {
+            const ratioA = a.games != 0 ? getFourthAvoidanceRatio(a) : -1;
+            const ratioB = b.games != 0 ? getFourthAvoidanceRatio(b) : -1;
+            return ratioA! - ratioB!;
+          });
+        } else {
+          sortedPlayers.sort((a, b) => {
+            const ratioA = a.games != 0 ? getFourthAvoidanceRatio(a) : -1;
+            const ratioB = b.games != 0 ? getFourthAvoidanceRatio(b) : -1;
+            return ratioB! - ratioA!;
+          });
+        }
         break;
-      case '最高スコア':
-        sortedPlayers.sort((a, b) => a.maxscore - b.maxscore);
+      case 'maxscore':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.maxscore - b.maxscore);
+        } else {
+          sortedPlayers.sort((a, b) => b.maxscore - a.maxscore);
+        }
         break;
       default:
         break;
     }
-    players = sortedPlayers;
-  }
-  
+    toggleSortOrder();
+  };
 
-  function getAvgRank(player: any) {
+  function getAvgRank(player: any): number | null {
     if (player.games == 0) {
       return null;
     }
-    const avarageRank = (player.firstnum + player.secondnum * 2 + player.thirdnum * 3 + player.fourthnum * 4) / player.games;
+    const avarageRank =
+      (player.firstnum +
+        player.secondnum * 2 +
+        player.thirdnum * 3 +
+        player.fourthnum * 4) /
+      player.games;
     return avarageRank;
   }
 
-  function getTopRatio(player: any) {
+  function getTopRatio(player: any): number | null {
     if (player.games == 0) {
       return null;
     }
-    const topRatio = (player.firstnum / player.games * 100).toFixed(1);
+    const topRatio = (player.firstnum / player.games) * 100;
     return topRatio;
   }
 
-  function getWinRatio(player: any) {
+  function getWinRatio(player: any): number | null {
     if (player.games == 0) {
       return null;
     }
-    const winRatio = ((player.firstnum + player.secondnum)/ player.games * 100).toFixed(1);
+    const winRatio =
+      ((player.firstnum + player.secondnum) / player.games) * 100;
+
     return winRatio;
   }
 
-  function getFourthAvoidanceRatio(player: any) {
+  function getFourthAvoidanceRatio(player: any): number | null {
     if (player.games == 0) {
       return null;
     }
-    const fourthAvoidanceRatio = ((1 - player.fourthnum / player.games) * 100).toFixed(1);
+    const fourthAvoidanceRatio = (1 - player.fourthnum / player.games) * 100;
     return fourthAvoidanceRatio;
   }
 
@@ -129,45 +205,65 @@ export default async function InvoicesTable({
               <tr>
                 <th scope="col" className="px-3 py-5 font-medium">
                   順位
+                  <button onClick={() => handleSort('rank')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                   プレイヤー
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   スコア
+                  <button onClick={() => handleSort('totalscore')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   試合数
+                  <button onClick={() => handleSort('games')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   1着
+                  <button onClick={() => handleSort('firstnum')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   2着
+                  <button onClick={() => handleSort('secondnum')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   3着
+                  <button onClick={() => handleSort('thirdnum')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   4着
+                  <button onClick={() => handleSort('fourthnum')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   平均着順
+                  <button onClick={() => handleSort('avgRank')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              {players?.map((player, index) => (
+              {sortedPlayers?.map((player) => (
                 <tr
                   key={player.id}
                   className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                 >
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {index + 1}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {player.name}
-                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">{player.rank}</td>
+                  <td className="whitespace-nowrap px-3 py-3">{player.name}</td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {player.totalscore}
                   </td>
@@ -191,8 +287,8 @@ export default async function InvoicesTable({
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <UpdatePlayer id={player.id} name={player.name}/>
-                      <DeletePlayer id={player.id} name={player.name}/>
+                      <UpdatePlayer id={player.id} name={player.name} />
+                      <DeletePlayer id={player.id} name={player.name} />
                     </div>
                   </td>
                 </tr>
@@ -204,60 +300,95 @@ export default async function InvoicesTable({
               <tr>
                 <th scope="col" className="px-3 py-5 font-medium">
                   順位
+                  <button onClick={() => handleSort('rank')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                   プレイヤー
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   スコア
+                  <button onClick={() => handleSort('totalscore')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   素点
+                  <button onClick={() => handleSort('rawscore')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   試合数
+                  <button onClick={() => handleSort('games')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   平均着順
+                  <button onClick={() => handleSort('avgRank')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   1着
+                  <button onClick={() => handleSort('firstnum')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   2着
+                  <button onClick={() => handleSort('secondnum')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   3着
+                  <button onClick={() => handleSort('thirdnum')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   4着
+                  <button onClick={() => handleSort('fourthnum')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   トップ率
+                  <button onClick={() => handleSort('topRatio')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   連帯率
+                  <button onClick={() => handleSort('winRatio')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   4着回避率
+                  <button onClick={() => handleSort('fourthAvoidanceRatio')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   最高スコア
+                  <button onClick={() => handleSort('maxscore')}>
+                    <LuArrowDownUp />
+                  </button>
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              {players?.map((player, index) => (
+              {sortedPlayers?.map((player) => (
                 <tr
                   key={player.id}
                   className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                 >
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {index + 1}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {player.name}
-                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">{player.rank}</td>
+                  <td className="whitespace-nowrap px-3 py-3">{player.name}</td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {player.totalscore}
                   </td>
@@ -283,21 +414,21 @@ export default async function InvoicesTable({
                     {player.fourthnum}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {getTopRatio(player)}
+                    {getTopRatio(player)?.toFixed(1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {getWinRatio(player)}
+                    {getWinRatio(player)?.toFixed(1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {getFourthAvoidanceRatio(player)}
+                    {getFourthAvoidanceRatio(player)?.toFixed(1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {player.maxscore}
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <UpdatePlayer id={player.id} name={player.name}/>
-                      <DeletePlayer id={player.id} name={player.name}/>
+                      <UpdatePlayer id={player.id} name={player.name} />
+                      <DeletePlayer id={player.id} name={player.name} />
                     </div>
                   </td>
                 </tr>

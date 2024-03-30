@@ -1,18 +1,24 @@
-"use client"
-import { IoPersonAdd } from "react-icons/io5";
-import { FaTrash } from "react-icons/fa";
-import { FaPen } from "react-icons/fa6";
-import { MdOutlinePlaylistAdd } from "react-icons/md";
+'use client';
+import { IoPersonAdd } from 'react-icons/io5';
+import { FaTrash } from 'react-icons/fa';
+import { FaPen } from 'react-icons/fa6';
+import { MdOutlinePlaylistAdd } from 'react-icons/md';
 import Link from 'next/link';
 import Modal from '@/app/components/Modal';
 import { useState } from 'react';
-import { createPlayer, deletePlayer, updatePlayer } from "@/app/lib/actions";
+import {
+  createPlayer,
+  deletePlayer,
+  resisterGame,
+  updatePlayer,
+} from '@/app/lib/actions';
+import { Player } from './table';
 
 export function CreatePlayer() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [playerName, setPlayerName] = useState('');
 
-  const handleSubmit = (e : any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     // プレイヤーを登録
@@ -23,7 +29,7 @@ export function CreatePlayer() {
     setIsOpen(false);
     window.location.reload();
   };
-  
+
   return (
     <div>
       <button
@@ -33,13 +39,16 @@ export function CreatePlayer() {
       >
         <IoPersonAdd />
       </button>
-      
+
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-4">
-          <h2 className="text-lg font-semibold mb-2">プレイヤーを登録</h2>
+          <h2 className="mb-2 text-lg font-semibold">プレイヤーを登録</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label htmlFor="playerName" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="playerName"
+                className="block text-sm font-medium text-gray-700"
+              >
                 名前
               </label>
               <input
@@ -47,21 +56,21 @@ export function CreatePlayer() {
                 id="playerName"
                 name="playerName"
                 onChange={(e) => setPlayerName(e.target.value)}
-                className="mt-1 p-2 border rounded-md w-full"
+                className="mt-1 w-full rounded-md border p-2"
                 placeholder="名前を入力"
               />
             </div>
             <div className="flex justify-end">
               <button
                 type="button"
-                className="px-4 py-2 mr-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
                 onClick={() => setIsOpen(false)}
               >
                 キャンセル
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
               >
                 登録
               </button>
@@ -69,16 +78,15 @@ export function CreatePlayer() {
           </form>
         </div>
       </Modal>
-
     </div>
-  )
+  );
 }
 
-export function UpdatePlayer({ id, name }: { id: any, name: any }) {
+export function UpdatePlayer({ id, name }: { id: any; name: any }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [playerName, setPlayerName] = useState(name);
 
-  const handleSubmit = (e : any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     // プレイヤーを登録
@@ -91,23 +99,26 @@ export function UpdatePlayer({ id, name }: { id: any, name: any }) {
     setPlayerName('');
     window.location.reload();
   };
-  
+
   return (
     <div>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex h-10 items-center rounded-lg text-blue-500 px-2 font-medium transition-colors"
+        className="flex h-10 items-center rounded-lg px-2 font-medium text-blue-500 transition-colors"
         style={{ fontSize: '1.2rem' }}
       >
         <FaPen />
       </button>
-      
+
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-4">
-          <h2 className="text-lg font-semibold mb-2">プレイヤー名を変更</h2>
+          <h2 className="mb-2 text-lg font-semibold">プレイヤー名を変更</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label htmlFor="playerName" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="playerName"
+                className="block text-sm font-medium text-gray-700"
+              >
                 名前
               </label>
               <input
@@ -116,21 +127,21 @@ export function UpdatePlayer({ id, name }: { id: any, name: any }) {
                 name="playerName"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                className="mt-1 p-2 border rounded-md w-full"
+                className="mt-1 w-full rounded-md border p-2"
                 placeholder="名前を入力"
               />
             </div>
             <div className="flex justify-end">
               <button
                 type="button"
-                className="px-4 py-2 mr-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
                 onClick={() => setIsOpen(false)}
               >
                 キャンセル
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
               >
                 登録
               </button>
@@ -138,15 +149,14 @@ export function UpdatePlayer({ id, name }: { id: any, name: any }) {
           </form>
         </div>
       </Modal>
-
     </div>
-  )
+  );
 }
 
-export function DeletePlayer({ id, name }: { id: any, name: any }) {
+export function DeletePlayer({ id, name }: { id: any; name: any }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleSubmit = (e : any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     deletePlayer(id);
@@ -154,32 +164,34 @@ export function DeletePlayer({ id, name }: { id: any, name: any }) {
     setIsOpen(false);
     window.location.reload();
   };
-  
+
   return (
     <div>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex h-10 items-center rounded-lg text-red-500 px-2 font-medium transition-colors"
+        className="flex h-10 items-center rounded-lg px-2 font-medium text-red-500 transition-colors"
         style={{ fontSize: '1.2rem' }}
       >
         <FaTrash />
       </button>
-      
+
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-4">
-          <h2 className="text-lg font-semibold mb-2">{name} を削除しますか？</h2>
+          <h2 className="mb-2 text-lg font-semibold">
+            {name} を削除しますか？
+          </h2>
           <form onSubmit={handleSubmit}>
             <div className="flex justify-end">
               <button
                 type="button"
-                className="px-4 py-2 mr-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
                 onClick={() => setIsOpen(false)}
               >
                 キャンセル
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                className="rounded-md bg-red-500 px-4 py-2 text-white hover:bg-red-600"
               >
                 削除
               </button>
@@ -187,9 +199,8 @@ export function DeletePlayer({ id, name }: { id: any, name: any }) {
           </form>
         </div>
       </Modal>
-
     </div>
-  )
+  );
 }
 
 interface Result {
@@ -197,23 +208,59 @@ interface Result {
   score: number;
 }
 
-export function RegisterGame() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [playerName, setPlayerName] = useState('');
-  const [players, setPlayers] = useState<Result>();
+export function RegisterGame({ players }: { players: string[] }) {
+  const initialResults: Result[] = [
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+    { name: '', score: 0 },
+  ];
 
-  const handleSubmit = (e : any) => {
+  const labels: string[] = [
+    '東家プレイヤー',
+    '南家プレイヤー',
+    '西家プレイヤー',
+    '北家プレイヤー',
+  ];
+
+  const [totalScore, setTotalScore] = useState<number>(0);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [results, setResults] = useState<Result[]>(initialResults);
+
+  function setResult(value: any, index: number, option: string) {
+    if (option == 'name') {
+      results[index].name = value;
+    }
+    if (option == 'score') {
+      results[index].score = value;
+    }
+    getTotalScore();
+  }
+
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     // プレイヤーを登録
     const formData = new FormData();
-    formData.append('playerName', playerName);
-    createPlayer(formData);
-
+    formData.append('EplayerName', results[0].name);
+    formData.append('EplayerScore', results[0].score.toString());
+    formData.append('SplayerName', results[1].name);
+    formData.append('SplayerScore', results[1].score.toString());
+    formData.append('WplayerName', results[2].name);
+    formData.append('WplayerScore', results[2].score.toString());
+    formData.append('NplayerName', results[3].name);
+    formData.append('NplayerScore', results[3].score.toString());
+    //resisterGame(formData);
     setIsOpen(false);
     window.location.reload();
   };
-  
+
+  function getTotalScore() {
+    var totalscore = 0;
+    results.map((result) => (totalscore += result.score));
+    setTotalScore(totalscore);
+  }
+
   return (
     <div>
       <button
@@ -223,43 +270,62 @@ export function RegisterGame() {
       >
         <MdOutlinePlaylistAdd />
       </button>
-      
+
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-4">
-          <h2 className="text-lg font-semibold mb-2">プレイヤーを登録</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="playerName" className="block text-sm font-medium text-gray-700">
-                名前
+          <h2 className="mb-2 text-lg font-semibold">結果を登録</h2>
+          {results.map((result, index) => (
+            <div key={index} className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                {labels[index]}
               </label>
+              <select
+                onChange={(e) => setResult(e.target.value, index, 'name')}
+                className="mt-1 w-full rounded-md border p-2"
+              >
+                <option value="">名前を選択</option>
+                {players.map((player, i) => (
+                  <option key={i} value={player}>
+                    {player}
+                  </option>
+                ))}
+              </select>
               <input
                 type="text"
-                id="playerName"
-                name="playerName"
-                onChange={(e) => setPlayerName(e.target.value)}
-                className="mt-1 p-2 border rounded-md w-full"
-                placeholder="名前を入力"
+                onChange={(e) =>
+                  setResult(parseInt(e.target.value), index, 'score')
+                }
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="素点を入力"
               />
             </div>
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="px-4 py-2 mr-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                onClick={() => setIsOpen(false)}
-              >
-                キャンセル
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-              >
-                登録
-              </button>
-            </div>
-          </form>
+          ))}
+          <div className={totalScore !== 100000 ? 'text-red-500' : ''}>
+            合計：{totalScore}
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+              onClick={() => setIsOpen(false)}
+            >
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              className={`rounded-md px-4 py-2 text-white  ${
+                totalScore === 100000
+                  ? 'bg-blue-500 hover:bg-blue-600'
+                  : 'cursor-not-allowed bg-gray-300'
+              }`}
+              onClick={(e) => handleSubmit(e)}
+              disabled={totalScore !== 100000}
+            >
+              登録
+            </button>
+          </div>
         </div>
       </Modal>
-
     </div>
-  )
+  );
 }
