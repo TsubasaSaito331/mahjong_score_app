@@ -9,6 +9,11 @@ export type User = {
   password: string;
 };
 
+export type Result = {
+  id: number;
+  score: number;
+};
+
 export type Player = {
   id: number;
   name: string;
@@ -21,4 +26,17 @@ export type Player = {
   fourthnum: number;
   maxscore: number;
   rank: number;
+};
+
+export type GameResult = {
+  id: number;
+  date: Date;
+  eastplayer: number;
+  eastplayerscore: number;
+  southplayer: number;
+  southplayerscore: number;
+  westplayer: number;
+  westplayerscore: number;
+  northplayer: number;
+  northplayerscore: number;
 };

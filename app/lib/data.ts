@@ -1,14 +1,9 @@
 import { sql } from '@vercel/postgres';
-import {
-  User,
-} from './definitions';
+import { User } from './definitions';
 import { unstable_noStore as noStore } from 'next/cache';
 
-const ITEMS_PER_PAGE = 100
-export async function fetchFilteredPlayers(
-  query: string,
-  currentPage: number,
-) {
+const ITEMS_PER_PAGE = 100;
+export async function fetchFilteredPlayers(query: string, currentPage: number) {
   noStore();
   try {
     const players = await sql`
@@ -18,12 +13,29 @@ export async function fetchFilteredPlayers(
     `;
     const playersWithRank = players.rows.map((player: any) => ({
       ...player,
-      rank: parseInt(player.rank)
+      rank: parseInt(player.rank),
     }));
     return playersWithRank;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('プレイヤーの取得に失敗しました.');
+  }
+}
+
+export async function fetchFilteredGameResults(
+  query: string,
+  currentPage: number,
+) {
+  noStore();
+  try {
+    const gameResults = await sql`
+      SELECT * FROM games
+      WHERE deleted = false;
+    `;
+    return gameResults.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('試合結果の取得に失敗しました.');
   }
 }
 
@@ -42,7 +54,6 @@ export async function fetchPlayersPages(query: string) {
     throw new Error('プレイヤーの取得に失敗しました');
   }
 }
-
 
 export async function getUser(email: string) {
   try {

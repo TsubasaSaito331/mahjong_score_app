@@ -3,7 +3,6 @@ import { IoPersonAdd } from 'react-icons/io5';
 import { FaTrash } from 'react-icons/fa';
 import { FaPen } from 'react-icons/fa6';
 import { MdOutlinePlaylistAdd } from 'react-icons/md';
-import Link from 'next/link';
 import Modal from '@/app/components/Modal';
 import { useState } from 'react';
 import {
@@ -12,6 +11,7 @@ import {
   resisterGame,
   updatePlayer,
 } from '@/app/lib/actions';
+import { Player, Result } from '@/app/lib/definitions';
 
 export function CreatePlayer() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -202,17 +202,12 @@ export function DeletePlayer({ id, name }: { id: any; name: any }) {
   );
 }
 
-interface Result {
-  name: string;
-  score: number;
-}
-
-export function RegisterGame({ players }: { players: string[] }) {
+export function RegisterGame({ players }: { players: Player[] }) {
   const initialResults: Result[] = [
-    { name: '', score: 0 },
-    { name: '', score: 0 },
-    { name: '', score: 0 },
-    { name: '', score: 0 },
+    { id: 0, score: 0 },
+    { id: 0, score: 0 },
+    { id: 0, score: 0 },
+    { id: 0, score: 0 },
   ];
 
   const labels: string[] = [
@@ -227,8 +222,8 @@ export function RegisterGame({ players }: { players: string[] }) {
   const [results, setResults] = useState<Result[]>(initialResults);
 
   function setResult(value: any, index: number, option: string) {
-    if (option == 'name') {
-      results[index].name = value;
+    if (option == 'id') {
+      results[index].id = value;
     }
     if (option == 'score') {
       results[index].score = value;
@@ -240,16 +235,7 @@ export function RegisterGame({ players }: { players: string[] }) {
     e.preventDefault();
 
     // プレイヤーを登録
-    const formData = new FormData();
-    formData.append('EplayerName', results[0].name);
-    formData.append('EplayerScore', results[0].score.toString());
-    formData.append('SplayerName', results[1].name);
-    formData.append('SplayerScore', results[1].score.toString());
-    formData.append('WplayerName', results[2].name);
-    formData.append('WplayerScore', results[2].score.toString());
-    formData.append('NplayerName', results[3].name);
-    formData.append('NplayerScore', results[3].score.toString());
-    //resisterGame(formData);
+    resisterGame(results);
     setIsOpen(false);
     window.location.reload();
   };
@@ -279,13 +265,13 @@ export function RegisterGame({ players }: { players: string[] }) {
                 {labels[index]}
               </label>
               <select
-                onChange={(e) => setResult(e.target.value, index, 'name')}
+                onChange={(e) => setResult(e.target.value, index, 'id')}
                 className="mt-1 w-full rounded-md border p-2"
               >
                 <option value="">名前を選択</option>
                 {players.map((player, i) => (
-                  <option key={i} value={player}>
-                    {player}
+                  <option key={i} value={player.id}>
+                    {player.name}
                   </option>
                 ))}
               </select>

@@ -252,7 +252,7 @@ export default function Table({ players }: { players: Player[] }) {
                   <td className="whitespace-nowrap px-3 py-3">{player.rank}</td>
                   <td className="whitespace-nowrap px-3 py-3">{player.name}</td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {player.totalscore}
+                    {player.totalscore.toFixed(1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {player.games}
@@ -270,7 +270,7 @@ export default function Table({ players }: { players: Player[] }) {
                     {player.fourthnum}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {getAvgRank(player)}
+                    {getAvgRank(player)?.toFixed(2)}
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
@@ -377,16 +377,16 @@ export default function Table({ players }: { players: Player[] }) {
                   <td className="whitespace-nowrap px-3 py-3">{player.rank}</td>
                   <td className="whitespace-nowrap px-3 py-3">{player.name}</td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {player.totalscore}
+                    {player.totalscore.toFixed(1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {player.rawscore}
+                    {player.rawscore.toFixed(1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {player.games}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {getAvgRank(player)}
+                    {getAvgRank(player)?.toFixed(2)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {player.firstnum}

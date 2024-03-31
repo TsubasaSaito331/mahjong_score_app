@@ -15,10 +15,14 @@ const links = [
   { name: 'ホーム', href: '/dashboard', icon: HomeIcon },
   {
     name: '試合結果',
-    href: '/dashboard/results',
+    href: '/dashboard/game-results',
     icon: DocumentDuplicateIcon,
   },
-  { name: '個人成績', href: '/dashboard/scores', icon: UserGroupIcon },
+  {
+    name: '個人成績',
+    href: '/dashboard/personal-results',
+    icon: UserGroupIcon,
+  },
 ];
 
 export default function NavLinks() {
