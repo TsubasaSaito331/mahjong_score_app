@@ -22,17 +22,52 @@ export async function fetchFilteredPlayers(query: string, currentPage: number) {
   }
 }
 
+
+export async function fetchAllPlayers() {
+  noStore();
+  try {
+    const players = await sql`
+      SELECT *, RANK() OVER (ORDER BY TotalScore DESC) AS rank
+      FROM players
+      WHERE deleted = false;
+    `;
+    const playersWithRank = players.rows.map((player: any) => ({
+      ...player,
+      rank: parseInt(player.rank),
+    }));
+    return playersWithRank;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('プレイヤーの取得に失敗しました.');
+  }
+}
+
 export async function fetchFilteredGameResults(
   query: string,
   currentPage: number,
+  playerId?:number,
 ) {
   noStore();
   try {
-    const gameResults = await sql`
-      SELECT * FROM games
-      WHERE deleted = false;
-    `;
+    if(playerId){
+      const gameResults = await sql`
+        SELECT * FROM games
+        WHERE deleted = false AND (
+          EastPlayer = ${playerId} OR
+          SouthPlayer = ${playerId} OR
+          WestPlayer = ${playerId} OR
+          NorthPlayer = ${playerId}
+        );
+      `;
     return gameResults.rows;
+  }
+    else{
+      const gameResults = await sql`
+        SELECT * FROM games
+        WHERE deleted = false;
+      `;
+    return gameResults.rows;
+  }
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('試合結果の取得に失敗しました.');

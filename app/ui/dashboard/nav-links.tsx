@@ -20,7 +20,7 @@ const links = [
   },
   {
     name: '個人成績',
-    href: '/dashboard/personal-results',
+    href: '/dashboard/player-results',
     icon: UserGroupIcon,
   },
 ];
