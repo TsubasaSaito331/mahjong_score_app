@@ -6,6 +6,9 @@
 # next.js
 /.next/
 
+# env
+.env
+
 # debug
 npm-debug.log*
 yarn-debug.log*
