@@ -191,8 +191,8 @@ export default function Table({ players }: { players: Player[] }) {
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  順位
                   <button onClick={() => handleSort('rank')}>
+                    順位
                     <LuArrowDownUp />
                   </button>
                 </th>
@@ -200,44 +200,44 @@ export default function Table({ players }: { players: Player[] }) {
                   プレイヤー
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  スコア
                   <button onClick={() => handleSort('totalscore')}>
+                    スコア
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  試合数
                   <button onClick={() => handleSort('games')}>
+                    試合数
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  1着
                   <button onClick={() => handleSort('firstnum')}>
+                    1着
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  2着
                   <button onClick={() => handleSort('secondnum')}>
+                    2着
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  3着
                   <button onClick={() => handleSort('thirdnum')}>
+                    3着
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  4着
                   <button onClick={() => handleSort('fourthnum')}>
+                    4着
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  平均着順
                   <button onClick={() => handleSort('avgRank')}>
+                    平均着順
                     <LuArrowDownUp />
                   </button>
                 </th>
@@ -286,8 +286,8 @@ export default function Table({ players }: { players: Player[] }) {
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  順位
                   <button onClick={() => handleSort('rank')}>
+                    順位
                     <LuArrowDownUp />
                   </button>
                 </th>
@@ -295,74 +295,74 @@ export default function Table({ players }: { players: Player[] }) {
                   プレイヤー
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  スコア
                   <button onClick={() => handleSort('totalscore')}>
+                    スコア
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  素点
                   <button onClick={() => handleSort('rawscore')}>
+                    素点
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  試合数
                   <button onClick={() => handleSort('games')}>
+                    試合数
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  平均着順
                   <button onClick={() => handleSort('avgRank')}>
+                    平均着順
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  1着
                   <button onClick={() => handleSort('firstnum')}>
+                    1着
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  2着
                   <button onClick={() => handleSort('secondnum')}>
+                    2着
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  3着
                   <button onClick={() => handleSort('thirdnum')}>
+                    3着
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  4着
                   <button onClick={() => handleSort('fourthnum')}>
+                    4着
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  トップ率
                   <button onClick={() => handleSort('topRatio')}>
+                    トップ率
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  連帯率
                   <button onClick={() => handleSort('winRatio')}>
+                    連帯率
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  4着回避率
                   <button onClick={() => handleSort('fourthAvoidanceRatio')}>
+                    4着回避率
                     <LuArrowDownUp />
                   </button>
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
-                  最高スコア
                   <button onClick={() => handleSort('maxscore')}>
+                    最高スコア
                     <LuArrowDownUp />
                   </button>
                 </th>

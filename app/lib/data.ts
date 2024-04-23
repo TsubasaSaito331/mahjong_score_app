@@ -57,14 +57,16 @@ export async function fetchFilteredGameResults(
           SouthPlayer = ${playerId} OR
           WestPlayer = ${playerId} OR
           NorthPlayer = ${playerId}
-        );
+        )
+        ORDER BY Date DESC;
       `;
     return gameResults.rows;
   }
     else{
       const gameResults = await sql`
         SELECT * FROM games
-        WHERE deleted = false;
+        WHERE deleted = false
+        ORDER BY Date DESC;
       `;
     return gameResults.rows;
   }

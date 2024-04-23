@@ -43,10 +43,10 @@ export function UpdateGameResult({
     getTotalScore();
   }
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    deleteGame(gameResult);
-    resisterGame(results, gameResult.date);
+    await deleteGame(gameResult);
+    await resisterGame(results, gameResult.date);
     setIsOpen(false);
     window.location.reload();
   };

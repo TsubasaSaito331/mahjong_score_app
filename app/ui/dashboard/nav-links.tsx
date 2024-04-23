@@ -4,6 +4,7 @@ import {
   UserGroupIcon,
   HomeIcon,
   DocumentDuplicateIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -18,10 +19,15 @@ const links = [
     href: '/dashboard/game-results',
     icon: DocumentDuplicateIcon,
   },
+  // {
+  //   name: '個人成績',
+  //   href: '/dashboard/player-results',
+  //   icon: UserGroupIcon,
+  // },
   {
-    name: '個人成績',
-    href: '/dashboard/player-results',
-    icon: UserGroupIcon,
+    name: '設定',
+    href: '/dashboard/settings',
+    icon: Cog6ToothIcon,
   },
 ];
 

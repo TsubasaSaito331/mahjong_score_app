@@ -135,6 +135,7 @@ export async function resisterGame(results: Result[], date?: Date) {
   const japanTimeString = japanTime.toISOString();
 
   const resultsWithGamePoints = calcGamePoints(results);
+  console.log(resultsWithGamePoints)
 
   // Insert data into the database
   try {

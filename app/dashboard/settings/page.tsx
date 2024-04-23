@@ -5,7 +5,6 @@ import { fetchAllPlayers, fetchFilteredGameResults } from '@/app/lib/data';
 import { Metadata } from 'next';
 import { RegisterGame } from '@/app/ui/dashboard/buttons';
 import GameResultTable from '@/app/ui/game-results/table';
-import Search from '@/app/ui/search';
 
 export const metadata: Metadata = {
   title: '個人成績',
@@ -31,14 +30,8 @@ export default async function Page({
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
-        <h1 className={`${lusitana.className} text-2xl font-bold`}>個人成績</h1>
-        <Search placeholder="プレイヤーを検索..." />
-        <RegisterGame players={players} />
+        <h1 className={`${lusitana.className} text-2xl font-bold`}>設定</h1>
       </div>
-      <Suspense key={query + currentPage}>
-        <ScoreTable players={players} />
-        <GameResultTable gameResults={gameResults} players={players} />
-      </Suspense>
     </div>
   );
 }
