@@ -2,8 +2,10 @@
 import { sql } from '@vercel/postgres';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-import { revalidatePath } from 'next/cache';
 import { GameResult, Result } from './definitions';
+import { cookies } from 'next/headers';
+import { getUser } from './data';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -24,6 +26,30 @@ export async function authenticate(
   }
 }
 
+export async function createAccount(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    const email = formData.get('email') as string;
+    const credentials = await getUser(formData.get('email') as string);
+    if (!!credentials) {
+      return 'そのメールアドレスは既に登録されています';
+    }
+
+    const password = formData.get('password') as string;
+    const newId = uuidv4();
+
+    console.log('Submitting form', { email, password });
+    // await sql`
+    //   INSERT INTO users (Id, Name, UserId, Password)
+    //   VALUES (${newId}, ${email}, ${email}, ${password})
+    // `;
+  } catch (error) {
+    return 'failed create account.';
+  }
+}
+
 export async function createPlayer(formData: FormData) {
   const playerName = formData.get('playerName') as string;
 
@@ -36,9 +62,10 @@ export async function createPlayer(formData: FormData) {
 
   // Insert data into the database
   try {
+    const userId = cookies().get('userId')?.toString();
     await sql`
-      INSERT INTO players (Name)
-      VALUES (${playerName})
+      INSERT INTO players (Name, UserId)
+      VALUES (${playerName}, ${userId})
     `;
   } catch (error) {
     return {
@@ -135,10 +162,11 @@ export async function resisterGame(results: Result[], date?: Date) {
   const japanTimeString = japanTime.toISOString();
 
   const resultsWithGamePoints = calcGamePoints(results);
-  console.log(resultsWithGamePoints)
+  console.log(resultsWithGamePoints);
 
   // Insert data into the database
   try {
+    const userId = cookies().get('userId')?.toString();
     for (const player of resultsWithGamePoints) {
       await sql`
         UPDATE players
@@ -159,7 +187,7 @@ export async function resisterGame(results: Result[], date?: Date) {
     }
     // 試合結果の登録
     await sql`
-      INSERT INTO games (Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore)
+      INSERT INTO games (Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore,UserId)
       VALUES (
         ${japanTimeString},
         ${results[0].id},
@@ -169,7 +197,8 @@ export async function resisterGame(results: Result[], date?: Date) {
         ${results[2].id},
         ${results[2].score},
         ${results[3].id},
-        ${results[3].score}
+        ${results[3].score},
+        ${userId}
         )
     `;
   } catch (error) {
@@ -229,7 +258,7 @@ export async function deleteGame(gameResult: GameResult) {
         Id =${player.id};
       `;
     }
-    // 試合結果の登録
+    // 試合結果をdeletedに変更
     await sql`
       UPDATE games
       SET deleted = true

@@ -1,15 +1,17 @@
 import { sql } from '@vercel/postgres';
 import { User } from './definitions';
 import { unstable_noStore as noStore } from 'next/cache';
+import { cookies } from 'next/headers';
 
 const ITEMS_PER_PAGE = 100;
 export async function fetchFilteredPlayers(query: string, currentPage: number) {
   noStore();
   try {
+    const userId = cookies().get('userId')?.toString();
     const players = await sql`
       SELECT *, RANK() OVER (ORDER BY TotalScore DESC) AS rank
       FROM players
-      WHERE deleted = false AND name ILIKE ${`%${query}%`};
+      WHERE deleted = false AND UserId = ${userId} AND name ILIKE ${`%${query}%`};
     `;
     const playersWithRank = players.rows.map((player: any) => ({
       ...player,
@@ -22,14 +24,14 @@ export async function fetchFilteredPlayers(query: string, currentPage: number) {
   }
 }
 
-
 export async function fetchAllPlayers() {
   noStore();
   try {
+    const userId = cookies().get('userId')?.toString();
     const players = await sql`
       SELECT *, RANK() OVER (ORDER BY TotalScore DESC) AS rank
       FROM players
-      WHERE deleted = false;
+      WHERE deleted = false AND UserId = ${userId};
     `;
     const playersWithRank = players.rows.map((player: any) => ({
       ...player,
@@ -45,14 +47,15 @@ export async function fetchAllPlayers() {
 export async function fetchFilteredGameResults(
   query: string,
   currentPage: number,
-  playerId?:number,
+  playerId?: number,
 ) {
   noStore();
   try {
-    if(playerId){
+    const userId = cookies().get('userId')?.toString();
+    if (playerId) {
       const gameResults = await sql`
         SELECT * FROM games
-        WHERE deleted = false AND (
+        WHERE deleted = false AND UserId = ${userId} AND (
           EastPlayer = ${playerId} OR
           SouthPlayer = ${playerId} OR
           WestPlayer = ${playerId} OR
@@ -60,16 +63,15 @@ export async function fetchFilteredGameResults(
         )
         ORDER BY Date DESC;
       `;
-    return gameResults.rows;
-  }
-    else{
+      return gameResults.rows;
+    } else {
       const gameResults = await sql`
         SELECT * FROM games
-        WHERE deleted = false
+        WHERE deleted = false AND UserId = ${userId}
         ORDER BY Date DESC;
       `;
-    return gameResults.rows;
-  }
+      return gameResults.rows;
+    }
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('試合結果の取得に失敗しました.');
@@ -79,10 +81,11 @@ export async function fetchFilteredGameResults(
 export async function fetchPlayersPages(query: string) {
   noStore();
   try {
+    const userId = cookies().get('userId')?.toString();
     const count = await sql`SELECT COUNT(*)
     FROM players
     WHERE
-      players.name ILIKE ${`%${query}%`}
+    UserId = ${userId} AND players.name ILIKE ${`%${query}%`}
   `;
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;

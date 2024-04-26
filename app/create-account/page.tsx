@@ -1,5 +1,5 @@
 import AppLogo from '@/app/ui/app-logo';
-import LoginForm from '@/app/ui/login-form';
+import CreateAccountForm from '@/app/ui/create-account-form';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -11,12 +11,12 @@ export default function LoginPage() {
             <AppLogo />
           </div>
         </div>
-        <LoginForm />
+        <CreateAccountForm />
         <Link
-          href="/create-account"
-          className="flex justify-end font-medium text-blue-500  hover:text-blue-400"
+          href="/login"
+          className="flex justify-center font-medium text-gray-500  hover:text-gray-400"
         >
-          アカウントを作成
+          戻る
         </Link>
       </div>
     </main>
