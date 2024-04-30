@@ -9,5 +9,6 @@ CREATE TABLE games (
     WestPlayerScore INT DEFAULT 0,
     NorthPlayer UUID  REFERENCES players(id),
     NorthPlayerScore INT DEFAULT 0,
+    Deleted BOOLEAN DEFAULT false,
     UserId UUID
 );

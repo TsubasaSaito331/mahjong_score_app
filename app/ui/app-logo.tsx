@@ -1,11 +1,8 @@
-import { lusitana } from '@/app/ui/fonts';
 import Image from 'next/image';
 
 export default function AppLogo() {
   return (
-    <div
-      className={`${lusitana.className} flex flex-row items-center font-bold leading-none  text-white`}
-    >
+    <div className="flex flex-row items-center font-bold leading-none  text-white">
       <Image
         style={{ filter: 'invert(100%)' }}
         src="/mahjong-icon.png"

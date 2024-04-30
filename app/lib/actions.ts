@@ -38,15 +38,17 @@ export async function createAccount(
       return 'そのメールアドレスは既に登録されています';
     }
 
+    const name = formData.get('name') as string;
     const password = formData.get('password') as string;
     const hashedPassword = await bcrypt.hash(password, 10);
     const newId = uuidv4();
 
     await sql`
       INSERT INTO users (Id, Name, email, Password)
-      VALUES (${newId}, ${email}, ${email}, ${hashedPassword})
+      VALUES (${newId}, ${name}, ${email}, ${hashedPassword})
     `;
-    console.error('created account success!:', {
+    console.log('created account success!:', {
+      name: name,
       email: email,
       password: password,
     });

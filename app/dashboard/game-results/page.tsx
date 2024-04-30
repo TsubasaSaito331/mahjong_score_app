@@ -1,9 +1,5 @@
-import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
-import {
-  fetchAllPlayers,
-  fetchFilteredGameResults,
-} from '@/app/lib/data';
+import { fetchAllPlayers, fetchFilteredGameResults } from '@/app/lib/data';
 import { Metadata } from 'next';
 import { RegisterGame } from '@/app/ui/dashboard/buttons';
 import GameResultTable from '@/app/ui/game-results/table';
@@ -32,7 +28,7 @@ export default async function Page({
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
-        <h1 className={`${lusitana.className} text-2xl font-bold`}>試合結果</h1>
+        <h1 className="text-2xl font-bold">試合結果</h1>
         <RegisterGame players={players} />
       </div>
       <Suspense key={query + currentPage}>
