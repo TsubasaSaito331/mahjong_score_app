@@ -7,7 +7,7 @@ const ITEMS_PER_PAGE = 100;
 export async function fetchFilteredPlayers(query: string, currentPage: number) {
   noStore();
   try {
-    const userId = cookies().get('userId')?.toString();
+    const userId = cookies().get('user')?.value;
     const players = await sql`
       SELECT *, RANK() OVER (ORDER BY TotalScore DESC) AS rank
       FROM players
@@ -27,7 +27,7 @@ export async function fetchFilteredPlayers(query: string, currentPage: number) {
 export async function fetchAllPlayers() {
   noStore();
   try {
-    const userId = cookies().get('userId')?.toString();
+    const userId = cookies().get('user')?.value;
     const players = await sql`
       SELECT *, RANK() OVER (ORDER BY TotalScore DESC) AS rank
       FROM players
@@ -51,7 +51,7 @@ export async function fetchFilteredGameResults(
 ) {
   noStore();
   try {
-    const userId = cookies().get('userId')?.toString();
+    const userId = cookies().get('user')?.value;
     if (playerId) {
       const gameResults = await sql`
         SELECT * FROM games
@@ -81,7 +81,7 @@ export async function fetchFilteredGameResults(
 export async function fetchPlayersPages(query: string) {
   noStore();
   try {
-    const userId = cookies().get('userId')?.toString();
+    const userId = cookies().get('user')?.value;
     const count = await sql`SELECT COUNT(*)
     FROM players
     WHERE

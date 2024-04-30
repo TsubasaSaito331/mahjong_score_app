@@ -6,6 +6,7 @@ import { GameResult, Result } from './definitions';
 import { cookies } from 'next/headers';
 import { getUser } from './data';
 import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -38,14 +39,20 @@ export async function createAccount(
     }
 
     const password = formData.get('password') as string;
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newId = uuidv4();
 
-    console.log('Submitting form', { email, password });
-    // await sql`
-    //   INSERT INTO users (Id, Name, UserId, Password)
-    //   VALUES (${newId}, ${email}, ${email}, ${password})
-    // `;
+    await sql`
+      INSERT INTO users (Id, Name, email, Password)
+      VALUES (${newId}, ${email}, ${email}, ${hashedPassword})
+    `;
+    console.error('created account success!:', {
+      email: email,
+      password: password,
+    });
+    return 'success';
   } catch (error) {
+    console.error('Database Error:', error);
     return 'failed create account.';
   }
 }
@@ -62,14 +69,16 @@ export async function createPlayer(formData: FormData) {
 
   // Insert data into the database
   try {
-    const userId = cookies().get('userId')?.toString();
+    const newId = uuidv4();
+    const userId = cookies().get('user')?.value;
     await sql`
-      INSERT INTO players (Name, UserId)
-      VALUES (${playerName}, ${userId})
+      INSERT INTO players (Id, Name, UserId)
+      VALUES (${newId},${playerName}, ${userId})
     `;
   } catch (error) {
+    console.error('Database Error:', error);
     return {
-      message: 'Database Error : Failed to create player.',
+      message: 'Database Error: Failed to create player.',
     };
   }
   return {
@@ -96,6 +105,7 @@ export async function updatePlayer(formData: FormData) {
       WHERE id = ${id}
     `;
   } catch (error) {
+    console.error('Database Error:', error);
     return {
       message: 'Database Error : Failed to update player.',
     };
@@ -114,6 +124,7 @@ export async function deletePlayer(id: string) {
     `;
     return { message: 'Deleted Player.' };
   } catch (error) {
+    console.error('Database Error:', error);
     return { message: 'Database Error: Failed to Delete Player.' };
   }
 }
@@ -166,7 +177,7 @@ export async function resisterGame(results: Result[], date?: Date) {
 
   // Insert data into the database
   try {
-    const userId = cookies().get('userId')?.toString();
+    const userId = cookies().get('user')?.value;
     for (const player of resultsWithGamePoints) {
       await sql`
         UPDATE players
@@ -185,10 +196,12 @@ export async function resisterGame(results: Result[], date?: Date) {
           Id =${player.id};
         `;
     }
+    const newId = uuidv4();
     // 試合結果の登録
     await sql`
-      INSERT INTO games (Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore,UserId)
+      INSERT INTO games (Id,Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore,UserId)
       VALUES (
+        ${newId}
         ${japanTimeString},
         ${results[0].id},
         ${results[0].score},
@@ -202,6 +215,7 @@ export async function resisterGame(results: Result[], date?: Date) {
         )
     `;
   } catch (error) {
+    console.error('Database Error:', error);
     return {
       message: 'Database Error : Failed to resister game.',
     };
@@ -266,6 +280,7 @@ export async function deleteGame(gameResult: GameResult) {
     `;
     return { message: 'Deleted Game.' };
   } catch (error) {
+    console.error('Database Error:', error);
     return { message: 'Database Error: Failed to Delete Game.' };
   }
 }
