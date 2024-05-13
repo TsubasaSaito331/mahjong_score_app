@@ -1,6 +1,6 @@
 CREATE TABLE games (
     Id UUID PRIMARY KEY,
-    Date DATE,
+    Date DATETIME,
     EastPlayer UUID  REFERENCES players(id),
     EastPlayerScore INT DEFAULT 0,
     SouthPlayer UUID  REFERENCES players(id),

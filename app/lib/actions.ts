@@ -172,11 +172,14 @@ export async function resisterGame(results: Result[], date?: Date) {
   if (!date) {
     date = new Date();
   }
-  const japanTime = new Date(date.getTime() + 9 * 60 * 60 * 1000); // UTC+9時の場合
-  const japanTimeString = japanTime.toISOString();
+  const options = {
+    timeZone: 'Asia/Tokyo', // タイムゾーンを設定
+    hour12: false, // 24時間表記にする場合
+  };
+  const japanTimeString = date.toLocaleString('ja-JP', options);
+  console.log(japanTimeString);
 
-  const resultsCopy = { ...results };
-  const resultsWithGamePoints = calcGamePoints(resultsCopy);
+  const resultsWithGamePoints = calcGamePoints(results.slice());
   console.log(resultsWithGamePoints);
 
   // Insert data into the database

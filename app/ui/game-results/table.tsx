@@ -14,11 +14,17 @@ export default function GameResultTable({
 }) {
   const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
   const formatDate = (date: Date) => {
-    return `${date.toLocaleDateString('ja-JP', {
+    const dateString = date.toLocaleDateString('ja-JP', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-    })}(${weekdays[date.getDay()]})`;
+    });
+    const timeString = date.toLocaleTimeString('ja-JP', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+    return `${dateString}(${weekdays[date.getDay()]}) ${timeString}`;
   };
 
   const playerName = (id: number): string | undefined => {
