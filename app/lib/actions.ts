@@ -7,6 +7,7 @@ import { cookies } from 'next/headers';
 import { getUser } from './data';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
+import { MdContactSupport } from 'react-icons/md';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -203,7 +204,7 @@ export async function resisterGame(results: Result[], date?: Date) {
     await sql`
       INSERT INTO games (Id,Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore,UserId)
       VALUES (
-        ${newId}
+        ${newId},
         ${japanTimeString},
         ${results[0].id},
         ${results[0].score},
@@ -214,7 +215,7 @@ export async function resisterGame(results: Result[], date?: Date) {
         ${results[3].id},
         ${results[3].score},
         ${userId}
-        )
+        );
     `;
   } catch (error) {
     console.error('Database Error:', error);
