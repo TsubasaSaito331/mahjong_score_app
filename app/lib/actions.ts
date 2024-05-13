@@ -175,7 +175,8 @@ export async function resisterGame(results: Result[], date?: Date) {
   const japanTime = new Date(date.getTime() + 9 * 60 * 60 * 1000); // UTC+9時の場合
   const japanTimeString = japanTime.toISOString();
 
-  const resultsWithGamePoints = calcGamePoints(results);
+  const resultsCopy = { ...results };
+  const resultsWithGamePoints = calcGamePoints(resultsCopy);
   console.log(resultsWithGamePoints);
 
   // Insert data into the database
