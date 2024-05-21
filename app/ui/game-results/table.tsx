@@ -132,11 +132,8 @@ export default function GameResultTable({
               </tr>
             </thead>
             {sortedGameResults?.map((gameResult) => (
-              <tbody className="border-b bg-white">
-                <tr
-                  key={gameResult.id}
-                  className="w-full py-3 text-sm last-of-type:border-none"
-                >
+              <tbody className="border-b bg-white" key={gameResult.id}>
+                <tr className="w-full py-3 text-sm last-of-type:border-none">
                   <td
                     colSpan={4}
                     className="whitespace-nowrap px-3 py-1 text-left"
@@ -153,10 +150,7 @@ export default function GameResultTable({
                     </div>
                   </td>
                 </tr>
-                <tr
-                  key={gameResult.id}
-                  className="w-full  py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-                >
+                <tr className="w-full  py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
                   <td className="whitespace-nowrap px-3 py-1">
                     {playerName(gameResult.eastplayer)}
                     <br />
