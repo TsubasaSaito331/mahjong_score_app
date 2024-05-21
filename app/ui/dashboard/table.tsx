@@ -184,58 +184,58 @@ export default function Table({ players }: { players: Player[] }) {
   }
 
   return (
-    <div className="mt-6 flow-root">
-      <div className="inline-block min-w-full align-middle">
+    <div className="mt-6 flow-root max-w-full">
+      <div className="inline-block align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           <table className="md:hidden">
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('rank')}>
                     順位
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className="font-smaill px-1 py-3 sm:pl-6">
                   プレイヤー
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('totalscore')}>
                     スコア
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('games')}>
                     試合数
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('firstnum')}>
                     1着
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('secondnum')}>
                     2着
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('thirdnum')}>
                     3着
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('fourthnum')}>
                     4着
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-3 py-5 font-medium">
+                <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('avgRank')}>
                     平均着順
                     <LuArrowDownUp />
@@ -249,34 +249,28 @@ export default function Table({ players }: { players: Player[] }) {
                   key={player.id}
                   className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                 >
-                  <td className="whitespace-nowrap px-3 py-3">{player.rank}</td>
-                  <td className="whitespace-nowrap px-3 py-3">{player.name}</td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-1 py-3">{player.rank}</td>
+                  <td className="whitespace-nowrap px-1 py-3">{player.name}</td>
+                  <td className="whitespace-nowrap px-1 py-3">
                     {player.totalscore.toFixed(1)}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-1 py-3">
                     {player.games}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-1 py-3">
                     {player.firstnum}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-1 py-3">
                     {player.secondnum}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-1 py-3">
                     {player.thirdnum}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-1 py-3">
                     {player.fourthnum}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-1 py-3">
                     {getAvgRank(player)?.toFixed(2)}
-                  </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex justify-end gap-3">
-                      <UpdatePlayer id={player.id} name={player.name} />
-                      <DeletePlayer id={player.id} name={player.name} />
-                    </div>
                   </td>
                 </tr>
               ))}

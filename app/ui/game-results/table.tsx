@@ -105,31 +105,25 @@ export default function GameResultTable({
           <table className="md:hidden">
             <thead className="rounded-lg text-left text-sm font-normal">
               <tr>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  日付
-                  <button onClick={() => handleSort('date')}>
-                    <LuArrowDownUp />
-                  </button>
-                </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className="font-small px-3 py-3 sm:pl-6 ">
                   東家
                   <button onClick={() => handleSort('eastplayerscore')}>
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className="font-small px-3 py-3 sm:pl-6">
                   南家
                   <button onClick={() => handleSort('southplayerscore')}>
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className="font-small px-3 py-3 sm:pl-6">
                   西家
                   <button onClick={() => handleSort('westplayerscore')}>
                     <LuArrowDownUp />
                   </button>
                 </th>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                <th scope="col" className="font-small px-3 py-3 sm:pl-6">
                   北家
                   <button onClick={() => handleSort('northplayerscore')}>
                     <LuArrowDownUp />
@@ -137,47 +131,55 @@ export default function GameResultTable({
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white">
-              {sortedGameResults?.map((gameResult) => (
+            {sortedGameResults?.map((gameResult) => (
+              <tbody className="border-b bg-white">
                 <tr
                   key={gameResult.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                  className="w-full py-3 text-sm last-of-type:border-none"
                 >
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {formatDate(gameResult.date)}
+                  <td
+                    colSpan={4}
+                    className="whitespace-nowrap px-3 py-1 text-left"
+                  >
+                    <div className="flex items-center">
+                      {formatDate(gameResult.date)}
+                      <div className="ml-auto flex">
+                        <UpdateGameResult
+                          gameResult={gameResult}
+                          players={players}
+                        />
+                        <DeletePGameResult gameResult={gameResult} />
+                      </div>
+                    </div>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                </tr>
+                <tr
+                  key={gameResult.id}
+                  className="w-full  py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                >
+                  <td className="whitespace-nowrap px-3 py-1">
                     {playerName(gameResult.eastplayer)}
                     <br />
                     {gameResult.eastplayerscore}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-3 py-1">
                     {playerName(gameResult.southplayer)}
                     <br />
                     {gameResult.southplayerscore}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-3 py-1">
                     {playerName(gameResult.westplayer)}
                     <br />
                     {gameResult.westplayerscore}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-3">
+                  <td className="whitespace-nowrap px-3 py-1">
                     {playerName(gameResult.northplayer)}
                     <br />
                     {gameResult.northplayerscore}
                   </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex justify-end gap-3">
-                      <UpdateGameResult
-                        gameResult={gameResult}
-                        players={players}
-                      />
-                      <DeletePGameResult gameResult={gameResult} />
-                    </div>
-                  </td>
                 </tr>
-              ))}
-            </tbody>
+              </tbody>
+            ))}
           </table>
           <table className="hidden min-w-full text-gray-900 md:table">
             <thead className="rounded-lg text-left text-sm font-normal">
