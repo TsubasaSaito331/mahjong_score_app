@@ -18,11 +18,13 @@ export default function GameResultTable({
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
+      timeZone: 'UTC', // タイムゾーンをUTCに設定
     });
     const timeString = date.toLocaleTimeString('ja-JP', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
+      timeZone: 'UTC', // タイムゾーンをUTCに設定
     });
     return `${dateString}(${weekdays[date.getDay()]}) ${timeString}`;
   };
