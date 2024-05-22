@@ -188,7 +188,7 @@ export default function Table({ players }: { players: Player[] }) {
       <div className="inline-block align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           <table className="md:hidden">
-            <thead className="rounded-lg text-left text-sm font-normal">
+            <thead className="rounded-lg text-left text-xs font-normal">
               <tr>
                 <th scope="col" className="font-small px-1 py-3">
                   <button onClick={() => handleSort('rank')}>
@@ -247,7 +247,7 @@ export default function Table({ players }: { players: Player[] }) {
               {sortedPlayers?.map((player) => (
                 <tr
                   key={player.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                  className="w-full border-b py-3 text-xs last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
                 >
                   <td className="whitespace-nowrap px-1 py-3">{player.rank}</td>
                   <td className="whitespace-nowrap px-1 py-3">{player.name}</td>
@@ -404,7 +404,7 @@ export default function Table({ players }: { players: Player[] }) {
                     {getFourthAvoidanceRatio(player)?.toFixed(1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
-                    {player.maxscore}
+                    {player.maxscore !== -100000 ? player.maxscore : null}
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">

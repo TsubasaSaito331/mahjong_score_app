@@ -8,7 +8,7 @@ CREATE TABLE players (
     SecondNum INT DEFAULT 0,
     ThirdNum INT DEFAULT 0,
     FourthNum INT DEFAULT 0,
-    MaxScore INT DEFAULT 25000,
+    MaxScore INT DEFAULT -100000,
     Deleted BOOLEAN DEFAULT false,
     UserId UUID
 );

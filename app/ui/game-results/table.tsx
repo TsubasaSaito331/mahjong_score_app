@@ -39,6 +39,50 @@ export default function GameResultTable({
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
+  const BONUS_POINTS = 5000;
+  const RANKING_POINTS = [30000 + BONUS_POINTS * 4, 10000, -10000, -30000];
+
+  // 順位点に対応するポイントを計算
+  const calcGamePoint = (gameResult: GameResult, index: number): string => {
+    const scores: number[] = [
+      gameResult.eastplayerscore,
+      gameResult.southplayerscore,
+      gameResult.westplayerscore,
+      gameResult.northplayerscore,
+    ];
+    const sortedScores = scores.slice().sort((a, b) => b - a);
+    const rank = scores.map((score) => {
+      const index = sortedScores.indexOf(score) + 1;
+      const count = sortedScores.filter((s) => s === score).length;
+      return count > 1 ? index + 0.5 * (count - 1) : index;
+    });
+
+    const calculatedScore =
+      (scores[index] -
+        25000 -
+        BONUS_POINTS +
+        (rank[index] === 1
+          ? RANKING_POINTS[0]
+          : rank[index] === 1.5
+          ? (RANKING_POINTS[0] + RANKING_POINTS[1]) / 2
+          : rank[index] === 2
+          ? RANKING_POINTS[1]
+          : rank[index] === 2.5
+          ? (RANKING_POINTS[1] + RANKING_POINTS[2]) / 2
+          : rank[index] === 3
+          ? RANKING_POINTS[2]
+          : rank[index] === 3.5
+          ? (RANKING_POINTS[2] + RANKING_POINTS[3]) / 2
+          : rank[index] === 4
+          ? RANKING_POINTS[3]
+          : 0)) /
+      1000;
+
+    return calculatedScore > 0
+      ? `+${calculatedScore}pt`
+      : `${calculatedScore}pt`;
+  };
+
   const handleSort = (columnName: string) => {
     switch (columnName) {
       case 'date':
@@ -102,8 +146,8 @@ export default function GameResultTable({
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-          <table className="md:hidden">
-            <thead className="rounded-lg text-left text-sm font-normal">
+          <table className="w-full md:hidden">
+            <thead className="rounded-lg text-center text-sm font-normal">
               <tr>
                 <th scope="col" className="font-small px-3 py-3 sm:pl-6 ">
                   東家
@@ -133,11 +177,8 @@ export default function GameResultTable({
             </thead>
             {sortedGameResults?.map((gameResult) => (
               <tbody className="border-b bg-white" key={gameResult.id}>
-                <tr className="w-full py-3 text-sm last-of-type:border-none">
-                  <td
-                    colSpan={4}
-                    className="whitespace-nowrap px-3 py-1 text-left"
-                  >
+                <tr className="w-full py-3  text-xs last-of-type:border-none">
+                  <td colSpan={4} className="whitespace-nowrap px-3 py-1">
                     <div className="flex items-center">
                       {formatDate(gameResult.date)}
                       <div className="ml-auto flex">
@@ -150,26 +191,34 @@ export default function GameResultTable({
                     </div>
                   </td>
                 </tr>
-                <tr className="w-full  py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-                  <td className="whitespace-nowrap px-3 py-1">
+                <tr className="w-full  py-3 text-center text-xs last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+                  <td className="whitespace-nowrap px-1 py-1">
                     {playerName(gameResult.eastplayer)}
                     <br />
                     {gameResult.eastplayerscore}
+                    <br />
+                    {calcGamePoint(gameResult, 0)}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-1">
+                  <td className="whitespace-nowrap px-1 py-1">
                     {playerName(gameResult.southplayer)}
                     <br />
                     {gameResult.southplayerscore}
+                    <br />
+                    {calcGamePoint(gameResult, 1)}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-1">
+                  <td className="whitespace-nowrap px-1 py-1">
                     {playerName(gameResult.westplayer)}
                     <br />
                     {gameResult.westplayerscore}
+                    <br />
+                    {calcGamePoint(gameResult, 2)}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-1">
+                  <td className="whitespace-nowrap px-1 py-1">
                     {playerName(gameResult.northplayer)}
                     <br />
                     {gameResult.northplayerscore}
+                    <br />
+                    {calcGamePoint(gameResult, 3)}
                   </td>
                 </tr>
               </tbody>
@@ -236,18 +285,24 @@ export default function GameResultTable({
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {gameResult.eastplayerscore}
+                    <br />
+                    {calcGamePoint(gameResult, 1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {playerName(gameResult.southplayer)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {gameResult.southplayerscore}
+                    <br />
+                    {calcGamePoint(gameResult, 1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {playerName(gameResult.westplayer)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {gameResult.westplayerscore}
+                    <br />
+                    {calcGamePoint(gameResult, 1)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {playerName(gameResult.northplayer)}
