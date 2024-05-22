@@ -31,8 +31,11 @@ export const { auth, signIn, signOut } = NextAuth({
           const { email, password } = parsedCredentials.data;
           const user = await getUser(email);
           if (!user) return null;
-          cookies().set('user', user.id);
-          cookies().set('userName', user.name);
+          const expiryDate = new Date();
+          expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1年間有効に設定
+
+          cookies().set('user', user.id, { expires: expiryDate });
+          cookies().set('userName', user.name, { expires: expiryDate });
           const passwordsMatch = await bcrypt.compare(password, user.password);
 
           console.log(user);
