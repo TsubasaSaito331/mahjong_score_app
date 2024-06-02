@@ -5,7 +5,7 @@ import { FaPen } from 'react-icons/fa6';
 import { MdOutlinePlaylistAdd } from 'react-icons/md';
 import Modal from '@/app/components/Modal';
 import { useEffect, useState } from 'react';
-import { deleteGame, resisterGame } from '@/app/lib/actions';
+import { deleteGame, registerGame } from '@/app/lib/actions';
 import { GameResult, Player, Result } from '@/app/lib/definitions';
 
 export function UpdateGameResult({
@@ -46,7 +46,7 @@ export function UpdateGameResult({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     await deleteGame(gameResult);
-    await resisterGame(results, gameResult.date);
+    await registerGame(results, gameResult.date);
     setIsOpen(false);
     window.location.reload();
   };

@@ -168,7 +168,11 @@ function calcGamePoints(players: any[]) {
   return players;
 }
 
-export async function resisterGame(results: Result[], date?: Date) {
+export async function registerGame(
+  results: Result[],
+  date?: Date,
+  retryCount = 0,
+) {
   if (!date) {
     date = new Date();
   }
@@ -177,7 +181,6 @@ export async function resisterGame(results: Result[], date?: Date) {
     hour12: false, // 24時間表記にする場合
   };
   const japanTimeString = date.toLocaleString('ja-JP', options);
-  console.log(japanTimeString);
 
   const resultsWithGamePoints = calcGamePoints(results.slice());
   console.log(resultsWithGamePoints);
@@ -221,18 +224,26 @@ export async function resisterGame(results: Result[], date?: Date) {
         ${userId}
         );
     `;
+
+    return { message: 'Game registered successfully.' };
   } catch (error) {
     console.error('Database Error:', error);
-    return {
-      message: 'Database Error : Failed to resister game.',
-    };
+
+    // リトライロジック (間隔200msで固定)
+    if (retryCount < 5) {
+      console.log(`Retrying registration in 200ms...`);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      return registerGame(results, date, retryCount + 1);
+    } else {
+      return {
+        message:
+          'Database Error: Failed to register game after multiple retries.',
+      };
+    }
   }
-  return {
-    message: 'Game resistered successfully.',
-  };
 }
 
-export async function deleteGame(gameResult: GameResult) {
+export async function deleteGame(gameResult: GameResult, retryCount = 0) {
   const Eplayer: Result = {
     id: gameResult.eastplayer,
     score: gameResult.eastplayerscore,
@@ -288,6 +299,17 @@ export async function deleteGame(gameResult: GameResult) {
     return { message: 'Deleted Game.' };
   } catch (error) {
     console.error('Database Error:', error);
-    return { message: 'Database Error: Failed to Delete Game.' };
+
+    // リトライロジック (間隔200msで固定)
+    if (retryCount < 5) {
+      console.log(`Retrying registration in 200ms...`);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      return deleteGame(gameResult, retryCount + 1);
+    } else {
+      return {
+        message:
+          'Database Error: Failed to register game after multiple retries.',
+      };
+    }
   }
 }

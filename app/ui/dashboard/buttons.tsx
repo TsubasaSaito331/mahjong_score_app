@@ -8,7 +8,7 @@ import { useState } from 'react';
 import {
   createPlayer,
   deletePlayer,
-  resisterGame,
+  registerGame,
   updatePlayer,
 } from '@/app/lib/actions';
 import { Player, Result } from '@/app/lib/definitions';
@@ -220,6 +220,7 @@ export function RegisterGame({ players }: { players: Player[] }) {
   const [totalScore, setTotalScore] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [results, setResults] = useState<Result[]>(initialResults);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   function setResult(value: any, index: number, option: string) {
     if (option == 'id') {
@@ -231,13 +232,21 @@ export function RegisterGame({ players }: { players: Player[] }) {
     getTotalScore();
   }
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    // プレイヤーを登録
-    resisterGame(results);
-    setIsOpen(false);
-    window.location.reload();
+    try {
+      const response = await registerGame(results);
+      if (response && response.message === 'Game registered successfully.') {
+        setIsOpen(false);
+        window.location.reload();
+      } else {
+        setErrorMessage('An unexpected error occurred.'); // 予期せぬエラー時のメッセージ
+      }
+    } catch (error) {
+      console.error('Error registering game:', error);
+      setErrorMessage('Failed to register game.'); // registerGame でエラーが発生した場合のメッセージ
+    }
   };
 
   function getTotalScore() {
@@ -255,7 +264,6 @@ export function RegisterGame({ players }: { players: Player[] }) {
       >
         <MdOutlinePlaylistAdd />
       </button>
-
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-4">
           <h2 className="mb-2 text-lg font-semibold">結果を登録</h2>
@@ -311,6 +319,7 @@ export function RegisterGame({ players }: { players: Player[] }) {
           </div>
         </div>
       </Modal>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
     </div>
   );
 }
