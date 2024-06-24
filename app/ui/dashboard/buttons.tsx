@@ -221,6 +221,7 @@ export function RegisterGame({ players }: { players: Player[] }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [results, setResults] = useState<Result[]>(initialResults);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   function setResult(value: any, index: number, option: string) {
     if (option == 'id') {
@@ -234,6 +235,7 @@ export function RegisterGame({ players }: { players: Player[] }) {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await registerGame(results);
@@ -246,6 +248,8 @@ export function RegisterGame({ players }: { players: Player[] }) {
     } catch (error) {
       console.error('Error registering game:', error);
       setErrorMessage('Failed to register game.'); // registerGame でエラーが発生した場合のメッセージ
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -307,14 +311,14 @@ export function RegisterGame({ players }: { players: Player[] }) {
             <button
               type="submit"
               className={`rounded-md px-4 py-2 text-white  ${
-                totalScore === 100000
+                totalScore === 100000 && !isLoading
                   ? 'bg-blue-500 hover:bg-blue-600'
                   : 'cursor-not-allowed bg-gray-300'
               }`}
               onClick={(e) => handleSubmit(e)}
-              disabled={totalScore !== 100000}
+              disabled={totalScore !== 100000 || isLoading}
             >
-              登録
+              {isLoading ? '登録中' : '登録'}
             </button>
           </div>
         </div>
