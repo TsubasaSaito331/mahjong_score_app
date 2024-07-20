@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { QueryResultRow, sql } from '@vercel/postgres';
 import { User } from './definitions';
 import { unstable_noStore as noStore } from 'next/cache';
 import { cookies } from 'next/headers';
@@ -44,33 +44,62 @@ export async function fetchAllPlayers() {
   }
 }
 
+export async function getPlayerId(
+  query: string,
+  userId: string,
+): Promise<QueryResultRow[]> {
+  try {
+    const playerId = await sql`
+      SELECT Id FROM players
+      WHERE deleted = false
+        AND UserId = ${userId}
+        AND name LIKE ${`%${query}%`}
+    `;
+
+    return playerId.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('検索に失敗しました.');
+  }
+}
+
 export async function fetchFilteredGameResults(
   query: string,
   currentPage: number,
-  playerId?: number,
 ) {
   noStore();
   try {
     const userId = cookies().get('user')?.value;
-    if (playerId) {
-      const gameResults = await sql`
-        SELECT * FROM games
-        WHERE deleted = false AND UserId = ${userId} AND (
-          EastPlayer = ${playerId} OR
-          SouthPlayer = ${playerId} OR
-          WestPlayer = ${playerId} OR
-          NorthPlayer = ${playerId}
-        )
-        ORDER BY Date DESC;
-      `;
-      return gameResults.rows;
-    } else {
-      const gameResults = await sql`
+    if (userId) {
+      if (query) {
+        const playerIds = await getPlayerId(query, userId);
+        if (playerIds.length !== 0) {
+          const gameResultsPromises = playerIds.map(async (player) => {
+            const results = await sql`
+              SELECT * FROM games
+              WHERE deleted = false
+                AND UserId = ${userId}
+                AND (EastPlayer = ${player.id} OR SouthPlayer = ${player.id} OR WestPlayer = ${player.id} OR NorthPlayer = ${player.id})
+              ORDER BY Date DESC;
+            `;
+            return results.rows;
+          });
+          // Promise.all を使用して全ての gameResultsPromises が解決するのを待つ
+          const gameResultsArray = await Promise.all(gameResultsPromises);
+
+          // gameResultsArray をフラットな配列に変換
+          const gameResults = gameResultsArray.flat();
+
+          return gameResults;
+        }
+      } else {
+        const gameResults = await sql`
         SELECT * FROM games
         WHERE deleted = false AND UserId = ${userId}
         ORDER BY Date DESC;
       `;
-      return gameResults.rows;
+        return gameResults.rows;
+      }
     }
   } catch (error) {
     console.error('Database Error:', error);

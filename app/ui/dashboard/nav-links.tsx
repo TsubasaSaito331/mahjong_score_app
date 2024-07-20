@@ -26,7 +26,7 @@ const links = [
   // },
   {
     name: '設定',
-    href: '/dashboard/settings',
+    href: '/dashboard/configPage',
     icon: Cog6ToothIcon,
   },
 ];
