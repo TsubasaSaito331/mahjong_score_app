@@ -81,21 +81,80 @@ export function CreatePlayer() {
   );
 }
 
-export function UpdatePlayer({ id, name }: { id: any; name: any }) {
+export function UpdatePlayer({
+  id,
+  name,
+  totalScore: initialTotalScore,
+  rawScore: initialRawScore,
+  games: initialGames,
+  firstNum: initialFirstNum,
+  secondNum: initialSecondNum,
+  thirdNum: initialThirdNum,
+  fourthNum: initialFourthNum,
+  maxScore: initialMaxScore,
+  deposition: initialDeposition,
+}: {
+  id: any;
+  name: any;
+  totalScore: number;
+  rawScore: number;
+  games: number;
+  firstNum: number;
+  secondNum: number;
+  thirdNum: number;
+  fourthNum: number;
+  maxScore: number;
+  deposition: number;
+}) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [playerName, setPlayerName] = useState(name);
+  const [totalScore, setTotalScore] = useState<number>(
+    parseFloat(initialTotalScore.toFixed(1)),
+  );
+  const [rawScore, setRawScore] = useState<number>(
+    parseFloat(initialRawScore.toFixed(1)),
+  );
+  const [games, setGames] = useState<number>(initialGames);
+  const [firstNum, setFirstNum] = useState<number>(initialFirstNum);
+  const [secondNum, setSecondNum] = useState<number>(initialSecondNum);
+  const [thirdNum, setThirdNum] = useState<number>(initialThirdNum);
+  const [fourthNum, setFourthNum] = useState<number>(initialFourthNum);
+  const [maxScore, setMaxScore] = useState<number>(initialMaxScore);
+  const [deposition, setDeposition] = useState<number>(initialDeposition);
+
+  const resetFields = () => {
+    setPlayerName('');
+    setTotalScore(0);
+    setRawScore(0);
+    setGames(0);
+    setFirstNum(0);
+    setSecondNum(0);
+    setThirdNum(0);
+    setFourthNum(0);
+    setMaxScore(-100000);
+    setDeposition(0);
+  };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
 
-    // プレイヤーを登録
+    // プレイヤーを更新
     const formData = new FormData();
     formData.append('id', id);
     formData.append('playerName', playerName);
+    formData.append('totalScore', totalScore.toString());
+    formData.append('rawScore', rawScore.toString());
+    formData.append('games', games.toString());
+    formData.append('firstNum', firstNum.toString());
+    formData.append('secondNum', secondNum.toString());
+    formData.append('thirdNum', thirdNum.toString());
+    formData.append('fourthNum', fourthNum.toString());
+    formData.append('maxScore', maxScore.toString());
+    formData.append('deposition', deposition.toString());
     updatePlayer(formData);
 
     setIsOpen(false);
-    setPlayerName('');
+    resetFields();
     window.location.reload();
   };
 
@@ -109,9 +168,15 @@ export function UpdatePlayer({ id, name }: { id: any; name: any }) {
         <FaPen />
       </button>
 
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          resetFields();
+        }}
+      >
         <div className="p-4">
-          <h2 className="mb-2 text-lg font-semibold">プレイヤー名を変更</h2>
+          <h2 className="mb-2 text-lg font-semibold">成績を編集</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label
@@ -128,6 +193,160 @@ export function UpdatePlayer({ id, name }: { id: any; name: any }) {
                 onChange={(e) => setPlayerName(e.target.value)}
                 className="mt-1 w-full rounded-md border p-2"
                 placeholder="名前を入力"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="totalScore"
+                className="block text-sm font-medium text-gray-700"
+              >
+                スコア
+              </label>
+              <input
+                type="number"
+                id="totalScore"
+                name="totalScore"
+                value={totalScore}
+                onChange={(e) => setTotalScore(parseFloat(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="スコアを入力"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="rawScore"
+                className="block text-sm font-medium text-gray-700"
+              >
+                素点
+              </label>
+              <input
+                type="number"
+                id="rawScore"
+                name="rawScore"
+                value={rawScore}
+                onChange={(e) => setRawScore(parseFloat(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="素点を入力"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="games"
+                className="block text-sm font-medium text-gray-700"
+              >
+                ゲーム数
+              </label>
+              <input
+                type="number"
+                id="games"
+                name="games"
+                value={games}
+                onChange={(e) => setGames(parseInt(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="ゲーム数を入力"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="firstNum"
+                className="block text-sm font-medium text-gray-700"
+              >
+                1位回数
+              </label>
+              <input
+                type="number"
+                id="firstNum"
+                name="firstNum"
+                value={firstNum}
+                onChange={(e) => setFirstNum(parseInt(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="1位の回数を入力"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="secondNum"
+                className="block text-sm font-medium text-gray-700"
+              >
+                2位回数
+              </label>
+              <input
+                type="number"
+                id="secondNum"
+                name="secondNum"
+                value={secondNum}
+                onChange={(e) => setSecondNum(parseInt(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="2位の回数を入力"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="thirdNum"
+                className="block text-sm font-medium text-gray-700"
+              >
+                3位回数
+              </label>
+              <input
+                type="number"
+                id="thirdNum"
+                name="thirdNum"
+                value={thirdNum}
+                onChange={(e) => setThirdNum(parseInt(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="3位の回数を入力"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="fourthNum"
+                className="block text-sm font-medium text-gray-700"
+              >
+                4位回数
+              </label>
+              <input
+                type="number"
+                id="fourthNum"
+                name="fourthNum"
+                value={fourthNum}
+                onChange={(e) => setFourthNum(parseInt(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="4位の回数を入力"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="maxScore"
+                className="block text-sm font-medium text-gray-700"
+              >
+                最高スコア
+              </label>
+              <input
+                type="number"
+                id="maxScore"
+                name="maxScore"
+                value={maxScore}
+                onChange={(e) => setMaxScore(parseInt(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="最高スコアを入力"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="deposition"
+                className="block text-sm font-medium text-gray-700"
+              >
+                供託
+              </label>
+              <input
+                type="number"
+                id="deposition"
+                name="deposition"
+                value={deposition}
+                onChange={(e) => setDeposition(parseInt(e.target.value))}
+                className="mt-1 w-full rounded-md border p-2"
+                placeholder="供託を入力"
               />
             </div>
             <div className="flex justify-end">

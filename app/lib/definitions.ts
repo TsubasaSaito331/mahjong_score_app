@@ -26,6 +26,7 @@ export type Player = {
   fourthnum: number;
   maxscore: number;
   rank: number;
+  deposition: number;
 };
 
 export type GameResult = {

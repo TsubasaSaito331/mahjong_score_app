@@ -408,7 +408,19 @@ export default function Table({ players }: { players: Player[] }) {
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <UpdatePlayer id={player.id} name={player.name} />
+                      <UpdatePlayer
+                        id={player.id}
+                        name={player.name}
+                        totalScore={player.totalscore}
+                        rawScore={player.rawscore}
+                        games={player.games}
+                        firstNum={player.firstnum}
+                        secondNum={player.secondnum}
+                        thirdNum={player.thirdnum}
+                        fourthNum={player.fourthnum}
+                        maxScore={player.maxscore}
+                        deposition={player.deposition}
+                      />
                       <DeletePlayer id={player.id} name={player.name} />
                     </div>
                   </td>

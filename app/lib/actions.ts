@@ -5,9 +5,8 @@ import { AuthError } from 'next-auth';
 import { GameResult, Result } from './definitions';
 import { cookies } from 'next/headers';
 import { getUser } from './data';
-import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import { MdContactSupport } from 'react-icons/md';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -92,6 +91,15 @@ export async function createPlayer(formData: FormData) {
 export async function updatePlayer(formData: FormData) {
   const id = formData.get('id') as string;
   const newName = formData.get('playerName') as string;
+  const totalScore = parseFloat(formData.get('totalScore') as string);
+  const rawScore = parseFloat(formData.get('rawScore') as string);
+  const games = parseInt(formData.get('games') as string);
+  const firstNum = parseInt(formData.get('firstNum') as string);
+  const secondNum = parseInt(formData.get('secondNum') as string);
+  const thirdNum = parseInt(formData.get('thirdNum') as string);
+  const fourthNum = parseInt(formData.get('fourthNum') as string);
+  const maxScore = parseInt(formData.get('maxScore') as string);
+  const deposition = parseInt(formData.get('deposition') as string);
 
   // playerName の取得が失敗した場合はエラーを返す
   if (!newName) {
@@ -100,17 +108,27 @@ export async function updatePlayer(formData: FormData) {
     };
   }
 
-  // Insert data into the database
+  // データベースにデータを更新
   try {
     await sql`
       UPDATE players
-      SET Name = ${newName}
+      SET
+        Name = ${newName},
+        TotalScore = ${totalScore},
+        RawScore = ${rawScore},
+        Games = ${games},
+        FirstNum = ${firstNum},
+        SecondNum = ${secondNum},
+        ThirdNum = ${thirdNum},
+        FourthNum = ${fourthNum},
+        MaxScore = ${maxScore},
+        Deposition = ${deposition}
       WHERE id = ${id}
     `;
   } catch (error) {
     console.error('Database Error:', error);
     return {
-      message: 'Database Error : Failed to update player.',
+      message: 'Database Error: Failed to update player.',
     };
   }
   return {
