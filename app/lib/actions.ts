@@ -140,18 +140,18 @@ function calcGamePoints(players: any[]) {
   let rank = 1;
   players[0].rank = rank;
   players[0].point =
-    (players[0].score + RANKING_POINTS[0] - BONUS_POINTS - 25000) / 1000;
+    (players[0].score * 100 + RANKING_POINTS[0] - BONUS_POINTS - 25000) / 1000;
   for (let i = 1; i < players.length; i++) {
-    if (players[i].score === players[i - 1].score) {
+    if (players[i].score * 100 === players[i - 1].score * 100) {
       players[i].rank = rank;
       players[i].point =
-        (players[i].score +
+        (players[i].score * 100 +
           (RANKING_POINTS[rank - 1] + RANKING_POINTS[rank]) / 2 -
           BONUS_POINTS -
           25000) /
         1000;
       players[i - 1].point =
-        (players[i - 1].score +
+        (players[i - 1].score * 100 +
           (RANKING_POINTS[rank - 1] + RANKING_POINTS[rank]) / 2 -
           BONUS_POINTS -
           25000) /
@@ -161,7 +161,10 @@ function calcGamePoints(players: any[]) {
       rank++;
       players[i].rank = rank;
       players[i].point =
-        (players[i].score + RANKING_POINTS[rank - 1] - BONUS_POINTS - 25000) /
+        (players[i].score * 100 +
+          RANKING_POINTS[rank - 1] -
+          BONUS_POINTS -
+          25000) /
         1000;
     }
   }
@@ -188,6 +191,26 @@ export async function registerGame(
   // Insert data into the database
   try {
     const userId = cookies().get('user')?.value;
+    const newId = uuidv4();
+    // 試合結果の登録
+    await sql`
+      INSERT INTO games (Id,Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore,UserId)
+      VALUES (
+        ${newId},
+        ${japanTimeString},
+        ${results[0].id},
+        ${results[0].score * 100},
+        ${results[1].id},
+        ${results[1].score * 100},
+        ${results[2].id},
+        ${results[2].score * 100},
+        ${results[3].id},
+        ${results[3].score * 100},
+        ${userId}
+        );
+    `;
+
+    // プレイヤーのスコアの更新
     for (const player of resultsWithGamePoints) {
       await sql`
         UPDATE players
@@ -206,33 +229,14 @@ export async function registerGame(
           Id =${player.id};
         `;
     }
-    const newId = uuidv4();
-    // 試合結果の登録
-    await sql`
-      INSERT INTO games (Id,Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore,UserId)
-      VALUES (
-        ${newId},
-        ${japanTimeString},
-        ${results[0].id},
-        ${results[0].score},
-        ${results[1].id},
-        ${results[1].score},
-        ${results[2].id},
-        ${results[2].score},
-        ${results[3].id},
-        ${results[3].score},
-        ${userId}
-        );
-    `;
-
     return { message: 'Game registered successfully.' };
   } catch (error) {
     console.error('Database Error:', error);
 
     // リトライロジック (間隔200msで固定)
-    if (retryCount < 5) {
-      console.log(`Retrying registration in 200ms...`);
-      await new Promise((resolve) => setTimeout(resolve, 200));
+    if (retryCount < 3) {
+      console.log(`Retrying registration in 100ms...`);
+      await new Promise((resolve) => setTimeout(resolve, 100));
       return registerGame(results, date, retryCount + 1);
     } else {
       return {

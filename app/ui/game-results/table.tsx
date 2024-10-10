@@ -66,18 +66,18 @@ export default function GameResultTable({
         (rank[index] === 1
           ? RANKING_POINTS[0]
           : rank[index] === 1.5
-          ? (RANKING_POINTS[0] + RANKING_POINTS[1]) / 2
-          : rank[index] === 2
-          ? RANKING_POINTS[1]
-          : rank[index] === 2.5
-          ? (RANKING_POINTS[1] + RANKING_POINTS[2]) / 2
-          : rank[index] === 3
-          ? RANKING_POINTS[2]
-          : rank[index] === 3.5
-          ? (RANKING_POINTS[2] + RANKING_POINTS[3]) / 2
-          : rank[index] === 4
-          ? RANKING_POINTS[3]
-          : 0)) /
+            ? (RANKING_POINTS[0] + RANKING_POINTS[1]) / 2
+            : rank[index] === 2
+              ? RANKING_POINTS[1]
+              : rank[index] === 2.5
+                ? (RANKING_POINTS[1] + RANKING_POINTS[2]) / 2
+                : rank[index] === 3
+                  ? RANKING_POINTS[2]
+                  : rank[index] === 3.5
+                    ? (RANKING_POINTS[2] + RANKING_POINTS[3]) / 2
+                    : rank[index] === 4
+                      ? RANKING_POINTS[3]
+                      : 0)) /
       1000;
 
     return calculatedScore > 0
@@ -288,7 +288,7 @@ export default function GameResultTable({
                   <td className="whitespace-nowrap px-3 py-3">
                     {gameResult.eastplayerscore}
                     <br />
-                    {calcGamePoint(gameResult, 1)}
+                    {calcGamePoint(gameResult, 0)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {playerName(gameResult.southplayer)}
@@ -304,13 +304,15 @@ export default function GameResultTable({
                   <td className="whitespace-nowrap px-3 py-3">
                     {gameResult.westplayerscore}
                     <br />
-                    {calcGamePoint(gameResult, 1)}
+                    {calcGamePoint(gameResult, 2)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {playerName(gameResult.northplayer)}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {gameResult.northplayerscore}
+                    <br />
+                    {calcGamePoint(gameResult, 3)}
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">

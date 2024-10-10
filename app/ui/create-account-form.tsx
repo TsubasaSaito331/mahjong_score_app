@@ -19,19 +19,20 @@ export default function CreateAccountForm() {
     <form action={dispatch} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6">
         <div className="w-full">
+          <h2 className="text-2xl  font-bold">成績表を新規作成</h2>
           <div>
             <label
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="email"
+              htmlFor="name"
             >
-              Name
+              成績表名
             </label>
             <div className="relative">
               <input
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="name"
                 name="name"
-                placeholder="Enter account name"
+                placeholder="成績表名を入力"
                 required
               />
               <IdentificationIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
@@ -42,7 +43,7 @@ export default function CreateAccountForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="email"
             >
-              Email
+              メールアドレス
             </label>
             <div className="relative">
               <input
@@ -50,7 +51,7 @@ export default function CreateAccountForm() {
                 id="email"
                 type="email"
                 name="email"
-                placeholder="Enter your email address"
+                placeholder="メールアドレスを入力"
                 required
               />
               <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
@@ -62,7 +63,7 @@ export default function CreateAccountForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="password"
             >
-              Password
+              パスワード
             </label>
             <div className="relative">
               <input
@@ -70,7 +71,7 @@ export default function CreateAccountForm() {
                 id="password"
                 type="password"
                 name="password"
-                placeholder="Enter password"
+                placeholder="パスワードを入力"
                 required
                 minLength={6}
               />

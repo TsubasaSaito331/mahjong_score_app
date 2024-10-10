@@ -240,7 +240,7 @@ export function RegisterGame({ players }: { players: Player[] }) {
     try {
       const response = await registerGame(results);
       if (response && response.message === 'Game registered successfully.') {
-        setIsOpen(false);
+        handleClose();
         window.location.reload();
       } else {
         setErrorMessage('An unexpected error occurred.'); // 予期せぬエラー時のメッセージ
@@ -253,9 +253,17 @@ export function RegisterGame({ players }: { players: Player[] }) {
     }
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    setTotalScore(0);
+    setResults(initialResults);
+    setErrorMessage(null);
+    setIsLoading(false);
+  };
+
   function getTotalScore() {
     var totalscore = 0;
-    results.map((result) => (totalscore += result.score));
+    results.map((result) => (totalscore += result.score * 100));
     setTotalScore(totalscore);
   }
 
@@ -268,7 +276,7 @@ export function RegisterGame({ players }: { players: Player[] }) {
       >
         <MdOutlinePlaylistAdd />
       </button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal isOpen={isOpen} onClose={handleClose}>
         <div className="p-4">
           <h2 className="mb-2 text-lg font-semibold">結果を登録</h2>
           {results.map((result, index) => (
@@ -287,34 +295,36 @@ export function RegisterGame({ players }: { players: Player[] }) {
                   </option>
                 ))}
               </select>
-              <input
-                type="text"
-                onChange={(e) =>
-                  setResult(parseInt(e.target.value), index, 'score')
-                }
-                className="mt-1 w-full rounded-md border p-2"
-                placeholder="素点を入力"
-              />
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  onChange={(e) =>
+                    setResult(parseInt(e.target.value), index, 'score')
+                  }
+                  className="mt-1 w-full rounded-md border p-2"
+                  placeholder="素点を入力"
+                />
+                <span className="ml-4 text-md">00</span>
+              </div>
             </div>
           ))}
           <div className={totalScore !== 100000 ? 'text-red-500' : ''}>
-            合計：{totalScore}
+            残：{100000 - totalScore}
           </div>
           <div className="flex justify-end">
             <button
               type="button"
               className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
             >
               キャンセル
             </button>
             <button
               type="submit"
-              className={`rounded-md px-4 py-2 text-white  ${
-                totalScore === 100000 && !isLoading
-                  ? 'bg-blue-500 hover:bg-blue-600'
-                  : 'cursor-not-allowed bg-gray-300'
-              }`}
+              className={`rounded-md px-4 py-2 text-white  ${totalScore === 100000 && !isLoading
+                ? 'bg-blue-500 hover:bg-blue-600'
+                : 'cursor-not-allowed bg-gray-300'
+                }`}
               onClick={(e) => handleSubmit(e)}
               disabled={totalScore !== 100000 || isLoading}
             >

@@ -16,7 +16,7 @@ export default function LoginPage() {
           href="/create-account"
           className="flex justify-end font-medium text-blue-500  hover:text-blue-400"
         >
-          アカウントを作成
+          成績表を新規作成
         </Link>
       </div>
     </main>
