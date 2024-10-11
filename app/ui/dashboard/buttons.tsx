@@ -137,6 +137,7 @@ export function UpdatePlayer({
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    setIsOpen(false);
 
     // プレイヤーを更新
     const formData = new FormData();
@@ -153,7 +154,6 @@ export function UpdatePlayer({
     formData.append('deposition', deposition.toString());
     updatePlayer(formData);
 
-    setIsOpen(false);
     resetFields();
     window.location.reload();
   };
@@ -523,7 +523,7 @@ export function RegisterGame({ players }: { players: Player[] }) {
                   className="mt-1 w-full rounded-md border p-2"
                   placeholder="素点を入力"
                 />
-                <span className="ml-4 text-md">00</span>
+                <span className="text-md ml-4">00</span>
               </div>
             </div>
           ))}
@@ -540,10 +540,11 @@ export function RegisterGame({ players }: { players: Player[] }) {
             </button>
             <button
               type="submit"
-              className={`rounded-md px-4 py-2 text-white  ${totalScore === 100000 && !isLoading
-                ? 'bg-blue-500 hover:bg-blue-600'
-                : 'cursor-not-allowed bg-gray-300'
-                }`}
+              className={`rounded-md px-4 py-2 text-white  ${
+                totalScore === 100000 && !isLoading
+                  ? 'bg-blue-500 hover:bg-blue-600'
+                  : 'cursor-not-allowed bg-gray-300'
+              }`}
               onClick={(e) => handleSubmit(e)}
               disabled={totalScore !== 100000 || isLoading}
             >

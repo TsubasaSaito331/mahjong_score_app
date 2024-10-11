@@ -234,14 +234,14 @@ export async function registerGame(
         UPDATE players
         SET
           TotalScore = TotalScore+${player.point},
-          RawScore = RawScore+${(player.score - 25000) / 1000},
+          RawScore = RawScore+${(player.score * 100 - 25000) / 1000},
           Games = Games + 1,
           FirstNum = FirstNum + ${player.rank == 1 ? 1 : 0},
           SecondNum = SecondNum + ${player.rank == 2 ? 1 : 0},
           ThirdNum = ThirdNum + ${player.rank == 3 ? 1 : 0},
           FourthNum = FourthNum + ${player.rank == 4 ? 1 : 0},
-          MaxScore = CASE WHEN MaxScore < ${player.score} THEN ${
-            player.score
+          MaxScore = CASE WHEN MaxScore < ${player.score * 100} THEN ${
+            player.score * 100
           } ELSE MaxScore END
         WHERE
           Id =${player.id};
@@ -302,7 +302,7 @@ export async function deleteGame(gameResult: GameResult, retryCount = 0) {
       UPDATE players
       SET
         TotalScore = TotalScore - ${player.point},
-        RawScore = RawScore - ${(player.score - 25000) / 1000},
+        RawScore = RawScore - ${(player.score * 100 - 25000) / 1000},
         Games = Games - 1,
         FirstNum = FirstNum - ${player.rank == 1 ? 1 : 0},
         SecondNum = SecondNum - ${player.rank == 2 ? 1 : 0},

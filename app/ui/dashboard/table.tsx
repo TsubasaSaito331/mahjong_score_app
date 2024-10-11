@@ -138,6 +138,13 @@ export default function Table({ players }: { players: Player[] }) {
           sortedPlayers.sort((a, b) => b.maxscore - a.maxscore);
         }
         break;
+      case 'deposition':
+        if (sortOrder === 'asc') {
+          sortedPlayers.sort((a, b) => a.deposition - b.deposition);
+        } else {
+          sortedPlayers.sort((a, b) => b.deposition - a.deposition);
+        }
+        break;
       default:
         break;
     }
@@ -360,6 +367,12 @@ export default function Table({ players }: { players: Player[] }) {
                     <LuArrowDownUp />
                   </button>
                 </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  <button onClick={() => handleSort('deposition')}>
+                    供託
+                    <LuArrowDownUp />
+                  </button>
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white">
@@ -405,6 +418,9 @@ export default function Table({ players }: { players: Player[] }) {
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {player.maxscore !== -100000 ? player.maxscore : null}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {player.deposition}
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
