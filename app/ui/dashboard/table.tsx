@@ -215,7 +215,7 @@ export default function Table({
 
   return (
     <div className="mt-6 flow-root max-w-full">
-      <div className="inline-block align-middle">
+      <div className="inline-block w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           {/* モバイル用テーブル */}
           <div className="overflow-x-auto md:hidden">
@@ -228,8 +228,8 @@ export default function Table({
                       className="flex items-center gap-1 hover:text-blue-600"
                     >
                       順位
-                      <LuArrowDownUp className="inline" />
                     </button>
+                    <LuArrowDownUp className="inline" />
                   </th>
                   <th scope="col" className="font-smaill px-1 py-3 sm:pl-6">
                     プレイヤー
@@ -240,8 +240,8 @@ export default function Table({
                       className="flex items-center gap-1 hover:text-blue-600"
                     >
                       スコア
-                      <LuArrowDownUp className="inline" />
                     </button>
+                    <LuArrowDownUp className="inline" />
                   </th>
                   <th scope="col" className="font-small px-1 py-3">
                     <button
@@ -249,8 +249,8 @@ export default function Table({
                       className="flex items-center gap-1 hover:text-blue-600"
                     >
                       試合数
-                      <LuArrowDownUp className="inline" />
                     </button>
+                    <LuArrowDownUp className="inline" />
                   </th>
                   <th scope="col" className="font-small px-1 py-3">
                     <button
@@ -258,8 +258,8 @@ export default function Table({
                       className="flex items-center gap-1 hover:text-blue-600"
                     >
                       1着
-                      <LuArrowDownUp className="inline" />
                     </button>
+                    <LuArrowDownUp className="inline" />
                   </th>
                   <th scope="col" className="font-small px-1 py-3">
                     <button
@@ -267,8 +267,8 @@ export default function Table({
                       className="flex items-center gap-1 hover:text-blue-600"
                     >
                       2着
-                      <LuArrowDownUp className="inline" />
                     </button>
+                    <LuArrowDownUp className="inline" />
                   </th>
                   <th scope="col" className="font-small px-1 py-3">
                     <button
@@ -276,8 +276,8 @@ export default function Table({
                       className="flex items-center gap-1 hover:text-blue-600"
                     >
                       3着
-                      <LuArrowDownUp className="inline" />
                     </button>
+                    <LuArrowDownUp className="inline" />
                   </th>
                   <th scope="col" className="font-small px-1 py-3">
                     <button
@@ -285,8 +285,8 @@ export default function Table({
                       className="flex items-center gap-1 hover:text-blue-600"
                     >
                       4着
-                      <LuArrowDownUp className="inline" />
                     </button>
+                    <LuArrowDownUp className="inline" />
                   </th>
                   <th scope="col" className="font-small px-1 py-3">
                     <button
@@ -294,8 +294,8 @@ export default function Table({
                       className="flex items-center gap-1 hover:text-blue-600"
                     >
                       平均着順
-                      <LuArrowDownUp className="inline" />
                     </button>
+                    <LuArrowDownUp className="inline" />
                   </th>
                 </tr>
               </thead>

@@ -41,9 +41,11 @@ export default async function Page({
         <CreatePlayer />
         <RegisterGame players={players} />
       </div>
-      <Suspense key={query + currentPage}>
-        <ScoreTable players={players} gameResults={gameResults} />
-      </Suspense>
+      <div className="overflow-x-auto">
+        <Suspense key={query + currentPage}>
+          <ScoreTable players={players} gameResults={gameResults} />
+        </Suspense>
+      </div>
     </div>
   );
 }
