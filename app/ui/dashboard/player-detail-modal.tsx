@@ -338,11 +338,8 @@ export default function PlayerDetailModal({
     },
   };
 
-  // chartOptionsにプラグインを追加
-  chartOptions.plugins = {
-    ...chartOptions.plugins,
-    customCanvasBackgroundColor: backgroundColorPlugin,
-  };
+  // chartOptionsにプラグインを追加（修正版）
+  const plugins = [backgroundColorPlugin];
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -420,11 +417,7 @@ export default function PlayerDetailModal({
           <h3 className="mb-1 text-sm font-semibold text-gray-800">成績推移</h3>
           {scoreHistory.dates.length > 0 ? (
             <div className="h-48">
-              <Line
-                data={chartData}
-                options={chartOptions}
-                plugins={[backgroundColorPlugin]}
-              />
+              <Line data={chartData} options={chartOptions} plugins={plugins} />
             </div>
           ) : (
             <div className="flex h-24 items-center justify-center rounded-lg bg-gray-50">
