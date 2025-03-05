@@ -527,8 +527,14 @@ export function RegisterGame({ players }: { players: Player[] }) {
               </div>
             </div>
           ))}
-          <div className={totalScore !== 100000 ? 'text-red-500' : ''}>
-            残：{100000 - totalScore}
+          <div
+            className={`mb-2 mt-4 p-2 text-center font-bold ${
+              totalScore !== 100000
+                ? 'rounded-md bg-red-50 text-red-500'
+                : 'rounded-md bg-green-50 text-green-500'
+            }`}
+          >
+            残り点数：{100000 - totalScore}
           </div>
           <div className="flex justify-end">
             <button

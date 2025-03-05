@@ -1,7 +1,11 @@
 import Search from '@/app/ui/search';
 import ScoreTable from '@/app/ui/dashboard/table';
 import { Suspense } from 'react';
-import { fetchFilteredPlayers, fetchPlayersPages } from '@/app/lib/data';
+import {
+  fetchFilteredGameResults,
+  fetchFilteredPlayers,
+  fetchPlayersPages,
+} from '@/app/lib/data';
 import { Metadata } from 'next';
 import { CreatePlayer, RegisterGame } from '@/app/ui/dashboard/buttons';
 import { cookies } from 'next/headers';
@@ -22,6 +26,10 @@ export default async function Page({
   const currentPage = Number(searchParams?.page) || 1;
   var title = cookies().get('userName')?.value;
   var players = await fetchFilteredPlayers(query, currentPage);
+  const gameResults = (await fetchFilteredGameResults(
+    query,
+    currentPage,
+  )) as any;
 
   return (
     <div className="w-full">
@@ -34,7 +42,7 @@ export default async function Page({
         <RegisterGame players={players} />
       </div>
       <Suspense key={query + currentPage}>
-        <ScoreTable players={players} />
+        <ScoreTable players={players} gameResults={gameResults} />
       </Suspense>
     </div>
   );
