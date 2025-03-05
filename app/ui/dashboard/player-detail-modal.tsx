@@ -76,8 +76,22 @@ export default function PlayerDetailModal({
 
     // 各試合での得点を計算
     const dates: string[] = [];
-    const scores: number[] = [0];
+    const scores: number[] = [];
     let cumulativeScore = 0;
+
+    // 最初のゲームがある場合は、初期値として0と最初の日付を追加
+    if (playerGames.length > 0) {
+      const firstGame = playerGames[0];
+      const formattedFirstDate = new Date(firstGame.date).toLocaleDateString(
+        'ja-JP',
+        {
+          month: 'short',
+          day: 'numeric',
+        },
+      );
+      dates.push(formattedFirstDate);
+      scores.push(0);
+    }
 
     playerGames.forEach((game) => {
       let score = 0;
@@ -129,6 +143,7 @@ export default function PlayerDetailModal({
       dates.push(formattedDate);
       scores.push(cumulativeScore);
     });
+    console.log(scores);
 
     setScoreHistory({ dates, scores });
   }, [player.id, gameResults]);
