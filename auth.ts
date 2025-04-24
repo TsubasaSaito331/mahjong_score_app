@@ -8,9 +8,9 @@ import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
 import credentials from 'next-auth/providers/credentials';
 
-async function getUser(email: string): Promise<User | undefined> {
+async function getUser(userId: string): Promise<User | undefined> {
   try {
-    const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
+    const user = await sql<User>`SELECT * FROM users WHERE userId=${userId}`;
     return user.rows[0];
   } catch (error) {
     console.error('Failed to fetch user:', error);
@@ -24,12 +24,12 @@ export const { auth, signIn, signOut } = NextAuth({
     Credentials({
       async authorize(credentials) {
         const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
+          .object({ userId: z.string(), password: z.string().min(4) })
           .safeParse(credentials);
 
         if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
-          const user = await getUser(email);
+          const { userId, password } = parsedCredentials.data;
+          const user = await getUser(userId);
           if (!user) return null;
           const expiryDate = new Date();
           expiryDate.setFullYear(expiryDate.getFullYear() + 1); // 1年間有効に設定

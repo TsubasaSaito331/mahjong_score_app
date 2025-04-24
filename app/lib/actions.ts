@@ -32,10 +32,10 @@ export async function createAccount(
   formData: FormData,
 ) {
   try {
-    const email = formData.get('email') as string;
-    const credentials = await getUser(formData.get('email') as string);
+    const userId = formData.get('userId') as string;
+    const credentials = await getUser(formData.get('userId') as string);
     if (!!credentials) {
-      return 'そのメールアドレスは既に登録されています';
+      return 'そのユーザIDは既に登録されています';
     }
 
     const name = formData.get('name') as string;
@@ -44,12 +44,12 @@ export async function createAccount(
     const newId = uuidv4();
 
     await sql`
-      INSERT INTO users (Id, Name, email, Password)
-      VALUES (${newId}, ${name}, ${email}, ${hashedPassword})
+      INSERT INTO users (Id, Name, userId, Password)
+      VALUES (${newId}, ${name}, ${userId}, ${hashedPassword})
     `;
     console.log('created account success!:', {
       name: name,
-      email: email,
+      userId: userId,
       password: password,
     });
     return 'success';
