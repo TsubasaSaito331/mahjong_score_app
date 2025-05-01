@@ -185,6 +185,10 @@ export default function GameResultTable({
                     <div className="flex items-center">
                       {formatDate(gameResult.date)}
                       <div className="ml-auto flex">
+                        <RegisterGame
+                          players={players}
+                          gameResult={gameResult}
+                        />
                         <DeleteGameResult gameResultId={gameResult.id} />
                       </div>
                     </div>
@@ -313,6 +317,7 @@ export default function GameResultTable({
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
+                      <RegisterGame players={players} gameResult={gameResult} />
                       <DeleteGameResult gameResultId={gameResult.id} />
                     </div>
                   </td>

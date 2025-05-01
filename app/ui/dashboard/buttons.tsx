@@ -422,13 +422,41 @@ export function DeletePlayer({ id, name }: { id: any; name: any }) {
   );
 }
 
-export function RegisterGame({ players }: { players: Player[] }) {
-  const initialResults: Result[] = [
-    { id: '', score: NaN },
-    { id: '', score: NaN },
-    { id: '', score: NaN },
-    { id: '', score: NaN },
-  ];
+export function RegisterGame({
+  players,
+  gameResult,
+}: {
+  players: Player[];
+  gameResult?: GameResult;
+}) {
+  const isEditMode = !!gameResult;
+
+  // GameResultオブジェクトからResultsを作成
+  const initialResults: Result[] = isEditMode
+    ? [
+        {
+          id: gameResult!.eastplayer,
+          score: gameResult!.eastplayerscore / 100,
+        },
+        {
+          id: gameResult!.southplayer,
+          score: gameResult!.southplayerscore / 100,
+        },
+        {
+          id: gameResult!.westplayer,
+          score: gameResult!.westplayerscore / 100,
+        },
+        {
+          id: gameResult!.northplayer,
+          score: gameResult!.northplayerscore / 100,
+        },
+      ]
+    : [
+        { id: '', score: NaN },
+        { id: '', score: NaN },
+        { id: '', score: NaN },
+        { id: '', score: NaN },
+      ];
 
   const labels: string[] = [
     '東家プレイヤー',
@@ -497,7 +525,18 @@ export function RegisterGame({ players }: { players: Player[] }) {
     }
 
     try {
-      const response = await registerGame(results);
+      // 編集モードの場合、まず古いデータを削除
+      if (isEditMode && gameResult) {
+        await deleteGame(gameResult.id);
+      }
+
+      // 登録処理 - 編集モードの場合は元の日付を保持
+      let response;
+      if (isEditMode && gameResult) {
+        response = await registerGame(results, gameResult.date);
+      } else {
+        response = await registerGame(results);
+      }
 
       if (response && response.message === 'Game registered successfully.') {
         handleClose();
@@ -521,16 +560,29 @@ export function RegisterGame({ players }: { players: Player[] }) {
 
   return (
     <div>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        style={{ fontSize: '1.2rem' }}
-      >
-        <MdOutlinePlaylistAdd />
-      </button>
+      {isEditMode ? (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex h-10 items-center rounded-lg px-2 font-medium text-blue-500 transition-colors"
+          style={{ fontSize: '1.2rem' }}
+          aria-label="ゲーム結果を編集"
+        >
+          <FaPen />
+        </button>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          style={{ fontSize: '1.2rem' }}
+        >
+          <MdOutlinePlaylistAdd />
+        </button>
+      )}
       <Modal isOpen={isOpen} onClose={handleClose}>
         <form onSubmit={handleSubmit} className="p-4">
-          <h2 className="mb-4 text-lg font-semibold">{'結果を登録'}</h2>
+          <h2 className="mb-4 text-lg font-semibold">
+            {isEditMode ? '結果を編集' : '結果を登録'}
+          </h2>
           {results.map((result, index) => (
             <div key={index} className="mb-4">
               <label
@@ -609,7 +661,13 @@ export function RegisterGame({ players }: { players: Player[] }) {
               }`}
               disabled={totalScore !== 100000 || isLoading}
             >
-              {isLoading ? '登録中...' : '登録'}
+              {isLoading
+                ? isEditMode
+                  ? '更新中...'
+                  : '登録中...'
+                : isEditMode
+                ? '更新'
+                : '登録'}
             </button>
           </div>
         </form>
