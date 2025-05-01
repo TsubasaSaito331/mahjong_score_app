@@ -217,7 +217,7 @@ export default function Table({
       <div className="inline-block w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           {/* モバイル用テーブル */}
-          <div className="overflow-x-auto md:hidden">
+          <div className="overflow-x-auto md:block portrait:block landscape:hidden">
             <table className="min-w-full">
               <thead className="rounded-lg text-left text-xs font-normal">
                 <tr>
@@ -341,7 +341,7 @@ export default function Table({
           </div>
 
           {/* デスクトップ用テーブル */}
-          <div className="hidden overflow-x-auto md:block">
+          <div className="hidden overflow-x-auto md:block portrait:hidden landscape:block">
             <table className="min-w-full text-gray-900">
               <thead className="rounded-lg bg-gray-100 text-left text-sm font-normal">
                 <tr>
