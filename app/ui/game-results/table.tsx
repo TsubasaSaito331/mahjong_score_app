@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { LuArrowDownUp } from 'react-icons/lu';
-import { GameResult, Player, Result } from '@/app/lib/definitions';
-import { DeletePGameResult, UpdateGameResult } from './buttons';
+import { GameResult, Player } from '@/app/lib/definitions';
+import { DeleteGameResult } from './buttons';
+import { RegisterGame } from '@/app/ui/dashboard/buttons';
 
 export default function GameResultTable({
   gameResults,
@@ -29,7 +30,7 @@ export default function GameResultTable({
     return `${dateString}(${weekdays[date.getDay()]}) ${timeString}`;
   };
 
-  const playerName = (id: number): string | undefined => {
+  const playerName = (id: string): string | undefined => {
     return players.find((player) => player.id === id)?.name;
   };
 
@@ -66,18 +67,18 @@ export default function GameResultTable({
         (rank[index] === 1
           ? RANKING_POINTS[0]
           : rank[index] === 1.5
-            ? (RANKING_POINTS[0] + RANKING_POINTS[1]) / 2
-            : rank[index] === 2
-              ? RANKING_POINTS[1]
-              : rank[index] === 2.5
-                ? (RANKING_POINTS[1] + RANKING_POINTS[2]) / 2
-                : rank[index] === 3
-                  ? RANKING_POINTS[2]
-                  : rank[index] === 3.5
-                    ? (RANKING_POINTS[2] + RANKING_POINTS[3]) / 2
-                    : rank[index] === 4
-                      ? RANKING_POINTS[3]
-                      : 0)) /
+          ? (RANKING_POINTS[0] + RANKING_POINTS[1]) / 2
+          : rank[index] === 2
+          ? RANKING_POINTS[1]
+          : rank[index] === 2.5
+          ? (RANKING_POINTS[1] + RANKING_POINTS[2]) / 2
+          : rank[index] === 3
+          ? RANKING_POINTS[2]
+          : rank[index] === 3.5
+          ? (RANKING_POINTS[2] + RANKING_POINTS[3]) / 2
+          : rank[index] === 4
+          ? RANKING_POINTS[3]
+          : 0)) /
       1000;
 
     return calculatedScore > 0
@@ -184,11 +185,7 @@ export default function GameResultTable({
                     <div className="flex items-center">
                       {formatDate(gameResult.date)}
                       <div className="ml-auto flex">
-                        <UpdateGameResult
-                          gameResult={gameResult}
-                          players={players}
-                        />
-                        <DeletePGameResult gameResult={gameResult} />
+                        <DeleteGameResult gameResultId={gameResult.id} />
                       </div>
                     </div>
                   </td>
@@ -316,11 +313,7 @@ export default function GameResultTable({
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <UpdateGameResult
-                        gameResult={gameResult}
-                        players={players}
-                      />
-                      <DeletePGameResult gameResult={gameResult} />
+                      <DeleteGameResult gameResultId={gameResult.id} />
                     </div>
                   </td>
                 </tr>

@@ -4,14 +4,15 @@ import { FaTrash } from 'react-icons/fa';
 import { FaPen } from 'react-icons/fa6';
 import { MdOutlinePlaylistAdd } from 'react-icons/md';
 import Modal from '@/app/components/Modal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   createPlayer,
   deletePlayer,
   registerGame,
   updatePlayer,
+  deleteGame,
 } from '@/app/lib/actions';
-import { Player, Result } from '@/app/lib/definitions';
+import { Player, Result, GameResult } from '@/app/lib/definitions';
 
 export function CreatePlayer() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -423,10 +424,10 @@ export function DeletePlayer({ id, name }: { id: any; name: any }) {
 
 export function RegisterGame({ players }: { players: Player[] }) {
   const initialResults: Result[] = [
-    { id: 0, score: 0 },
-    { id: 0, score: 0 },
-    { id: 0, score: 0 },
-    { id: 0, score: 0 },
+    { id: '', score: NaN },
+    { id: '', score: NaN },
+    { id: '', score: NaN },
+    { id: '', score: NaN },
   ];
 
   const labels: string[] = [
@@ -442,31 +443,71 @@ export function RegisterGame({ players }: { players: Player[] }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  function setResult(value: any, index: number, option: string) {
-    if (option == 'id') {
-      results[index].id = value;
-    }
-    if (option == 'score') {
-      results[index].score = value;
-    }
-    getTotalScore();
+  function calculateTotalScore(currentResults: Result[]) {
+    let total = 0;
+    currentResults.forEach((result) => {
+      const score = Number(result.score);
+      if (!isNaN(score)) {
+        total += score;
+      }
+    });
+    setTotalScore(total * 100);
   }
 
-  const handleSubmit = async (e: any) => {
+  useEffect(() => {
+    calculateTotalScore(results);
+  }, [results]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setResults(initialResults);
+      calculateTotalScore(initialResults);
+    }
+  }, [isOpen]);
+
+  function setResult(value: string, index: number, option: 'id' | 'score') {
+    const newResults = [...results];
+    if (option === 'id') {
+      newResults[index].id = value;
+    } else if (option === 'score') {
+      const scoreValue = parseInt(value, 10);
+      newResults[index].score = isNaN(scoreValue) ? 0 : scoreValue;
+    }
+    setResults(newResults);
+  }
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
+  ) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage(null);
+
+    const playerIds = results.map((r) => r.id).filter((id) => id !== '');
+    if (playerIds.length !== 4) {
+      setErrorMessage('プレイヤー全員を選択してください。');
+      setIsLoading(false);
+      return;
+    }
+    const uniquePlayerIds = new Set(playerIds);
+    if (uniquePlayerIds.size !== 4) {
+      setErrorMessage('プレイヤーが重複しています。');
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await registerGame(results);
+
       if (response && response.message === 'Game registered successfully.') {
         handleClose();
         window.location.reload();
       } else {
-        setErrorMessage('An unexpected error occurred.'); // 予期せぬエラー時のメッセージ
+        setErrorMessage(response?.message || '登録に失敗しました。');
       }
-    } catch (error) {
-      console.error('Error registering game:', error);
-      setErrorMessage('Failed to register game.'); // registerGame でエラーが発生した場合のメッセージ
+    } catch (error: any) {
+      console.error('Error processing game:', error);
+      setErrorMessage(error.message || '登録中にエラーが発生しました。');
     } finally {
       setIsLoading(false);
     }
@@ -474,17 +515,9 @@ export function RegisterGame({ players }: { players: Player[] }) {
 
   const handleClose = () => {
     setIsOpen(false);
-    setTotalScore(0);
-    setResults(initialResults);
     setErrorMessage(null);
     setIsLoading(false);
   };
-
-  function getTotalScore() {
-    var totalscore = 0;
-    results.map((result) => (totalscore += result.score * 100));
-    setTotalScore(totalscore);
-  }
 
   return (
     <div>
@@ -496,70 +529,91 @@ export function RegisterGame({ players }: { players: Player[] }) {
         <MdOutlinePlaylistAdd />
       </button>
       <Modal isOpen={isOpen} onClose={handleClose}>
-        <div className="p-4">
-          <h2 className="mb-2 text-lg font-semibold">結果を登録</h2>
+        <form onSubmit={handleSubmit} className="p-4">
+          <h2 className="mb-4 text-lg font-semibold">{'結果を登録'}</h2>
           {results.map((result, index) => (
             <div key={index} className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor={`player-${index}`}
+                className="block text-sm font-medium text-gray-700"
+              >
                 {labels[index]}
               </label>
               <select
+                id={`player-${index}`}
+                name={`player-${index}`}
                 onChange={(e) => setResult(e.target.value, index, 'id')}
-                className="mt-1 w-full rounded-md border p-2"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                value={result.id}
+                required
               >
                 <option value="">名前を選択</option>
-                {players.map((player, i) => (
-                  <option key={i} value={player.id}>
-                    {player.name}
-                  </option>
-                ))}
+                {players
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((player) => (
+                    <option key={player.id} value={player.id}>
+                      {player.name}
+                    </option>
+                  ))}
               </select>
-              <div className="flex items-center">
+              <div className="mt-2 flex items-center">
+                <label htmlFor={`score-${index}`} className="sr-only">
+                  {labels[index]} スコア
+                </label>
                 <input
-                  type="text"
-                  onChange={(e) =>
-                    setResult(parseInt(e.target.value), index, 'score')
-                  }
-                  className="mt-1 w-full rounded-md border p-2"
+                  id={`score-${index}`}
+                  name={`score-${index}`}
+                  type="number"
+                  onChange={(e) => setResult(e.target.value, index, 'score')}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  value={result.score}
                   placeholder="素点を入力"
+                  required
                 />
-                <span className="text-md ml-4">00</span>
+                <span className="ml-2 text-gray-500">00</span>
               </div>
             </div>
           ))}
           <div
-            className={`mb-2 mt-4 p-2 text-center font-bold ${
+            className={`mb-4 rounded-md p-2 text-center font-bold ${
               totalScore !== 100000
-                ? 'rounded-md bg-red-50 text-red-500'
-                : 'rounded-md bg-green-50 text-green-500'
+                ? 'bg-red-100 text-red-700'
+                : 'bg-green-100 text-green-700'
             }`}
+            role="status"
           >
-            残り点数：{100000 - totalScore}
+            合計点: {totalScore} / 残り: {100000 - totalScore}
           </div>
-          <div className="flex justify-end">
+          {errorMessage && (
+            <div
+              className="mb-4 rounded-md bg-red-100 p-3 text-center text-sm text-red-700"
+              role="alert"
+            >
+              {errorMessage}
+            </div>
+          )}
+          <div className="flex justify-end space-x-2">
             <button
               type="button"
-              className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               onClick={handleClose}
             >
               キャンセル
             </button>
             <button
               type="submit"
-              className={`rounded-md px-4 py-2 text-white  ${
+              className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm ${
                 totalScore === 100000 && !isLoading
-                  ? 'bg-blue-500 hover:bg-blue-600'
-                  : 'cursor-not-allowed bg-gray-300'
+                  ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+                  : 'cursor-not-allowed bg-gray-400'
               }`}
-              onClick={(e) => handleSubmit(e)}
               disabled={totalScore !== 100000 || isLoading}
             >
-              {isLoading ? '登録中' : '登録'}
+              {isLoading ? '登録中...' : '登録'}
             </button>
           </div>
-        </div>
+        </form>
       </Modal>
-      {errorMessage && <div className="error-message">{errorMessage}</div>}
     </div>
   );
 }

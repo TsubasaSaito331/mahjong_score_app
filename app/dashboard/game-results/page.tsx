@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { fetchAllPlayers, fetchFilteredGameResults } from '@/app/lib/data';
 import { Metadata } from 'next';
-import { RegisterGame } from '@/app/ui/dashboard/buttons';
+import { RegisterGame, CreatePlayer } from '@/app/ui/dashboard/buttons';
 import GameResultTable from '@/app/ui/game-results/table';
 import Search from '@/app/ui/search';
 
@@ -33,6 +33,7 @@ export default async function Page({
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
         <Search placeholder="プレイヤーを検索..." />
+        <CreatePlayer />
         <RegisterGame players={players} />
       </div>
       <Suspense key={query + currentPage}>

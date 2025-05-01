@@ -1,147 +1,23 @@
 'use client';
-import { IoPersonAdd } from 'react-icons/io5';
 import { FaTrash } from 'react-icons/fa';
-import { FaPen } from 'react-icons/fa6';
-import { MdOutlinePlaylistAdd } from 'react-icons/md';
 import Modal from '@/app/components/Modal';
-import { useEffect, useState } from 'react';
-import { deleteGame, registerGame } from '@/app/lib/actions';
-import { GameResult, Player, Result } from '@/app/lib/definitions';
+import { useState } from 'react';
+import { deleteGame } from '@/app/lib/actions';
 
-export function UpdateGameResult({
-  gameResult,
-  players,
-}: {
-  gameResult: GameResult;
-  players: Player[];
-}) {
-  const initialResults: Result[] = [
-    { id: gameResult.eastplayer, score: gameResult.eastplayerscore },
-    { id: gameResult.southplayer, score: gameResult.southplayerscore },
-    { id: gameResult.westplayer, score: gameResult.westplayerscore },
-    { id: gameResult.northplayer, score: gameResult.northplayerscore },
-  ];
-
-  const labels: string[] = [
-    '東家プレイヤー',
-    '南家プレイヤー',
-    '西家プレイヤー',
-    '北家プレイヤー',
-  ];
-
-  const [totalScore, setTotalScore] = useState<number>(0);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [results, setResults] = useState<Result[]>(initialResults);
-
-  function setResult(value: any, index: number, option: string) {
-    if (option == 'id') {
-      results[index].id = value;
-    }
-    if (option == 'score') {
-      results[index].score = value;
-    }
-    getTotalScore();
-  }
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    await deleteGame(gameResult);
-    await registerGame(results, gameResult.date);
-    setIsOpen(false);
-    window.location.reload();
-  };
-
-  function getTotalScore() {
-    var totalscore = 0;
-    results.map((result) => (totalscore += result.score));
-    setTotalScore(totalscore);
-  }
-
-  useEffect(() => {
-    getTotalScore();
-  }, []);
-
-  return (
-    <div>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="flex h-10 items-center rounded-lg px-2 font-medium text-blue-500 transition-colors"
-        style={{ fontSize: '1.2rem' }}
-      >
-        <FaPen />
-      </button>
-
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <div className="p-4">
-          <h2 className="mb-2 text-lg font-semibold">結果を編集</h2>
-          {results.map((result, index) => (
-            <div key={index} className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                {labels[index]}
-              </label>
-              <select
-                onChange={(e) => setResult(e.target.value, index, 'id')}
-                className="mt-1 w-full rounded-md border p-2"
-                value={result.id}
-              >
-                <option>名前を選択</option>
-                {players.map((player, i) => (
-                  <option key={i} value={player.id}>
-                    {player.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                onChange={(e) =>
-                  setResult(parseInt(e.target.value), index, 'score')
-                }
-                className="mt-1 w-full rounded-md border p-2"
-                value={result.score}
-                placeholder="素点を入力"
-              />
-            </div>
-          ))}
-          <div className={totalScore !== 100000 ? 'text-red-500' : ''}>
-            合計：{totalScore}
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
-              onClick={() => setIsOpen(false)}
-            >
-              キャンセル
-            </button>
-            <button
-              type="submit"
-              className={`rounded-md px-4 py-2 text-white  ${
-                totalScore === 100000
-                  ? 'bg-blue-500 hover:bg-blue-600'
-                  : 'cursor-not-allowed bg-gray-300'
-              }`}
-              onClick={(e) => handleSubmit(e)}
-              disabled={totalScore !== 100000}
-            >
-              登録
-            </button>
-          </div>
-        </div>
-      </Modal>
-    </div>
-  );
-}
-
-export function DeletePGameResult({ gameResult }: { gameResult: GameResult }) {
+export function DeleteGameResult({ gameResultId }: { gameResultId: string }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    deleteGame(gameResult);
-
-    setIsOpen(false);
-    window.location.reload();
+    try {
+      await deleteGame(gameResultId);
+      setIsOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to delete game:', error);
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -150,31 +26,30 @@ export function DeletePGameResult({ gameResult }: { gameResult: GameResult }) {
         onClick={() => setIsOpen(true)}
         className="flex h-10 items-center rounded-lg px-2 font-medium text-red-500 transition-colors"
         style={{ fontSize: '1.2rem' }}
+        aria-label="ゲーム結果を削除"
       >
         <FaTrash />
       </button>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <div className="p-4">
-          <h2 className="mb-2 text-lg font-semibold">削除しますか？</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
-                onClick={() => setIsOpen(false)}
-              >
-                キャンセル
-              </button>
-              <button
-                type="submit"
-                className="rounded-md bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-              >
-                削除
-              </button>
-            </div>
-          </form>
-        </div>
+        <form onSubmit={handleSubmit} className="p-4">
+          <h2 className="mb-4 text-lg font-semibold">削除しますか？</h2>
+          <div className="flex justify-end space-x-2">
+            <button
+              type="button"
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              onClick={() => setIsOpen(false)}
+            >
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              className="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              削除
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

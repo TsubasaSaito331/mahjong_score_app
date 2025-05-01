@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  UserGroupIcon,
   HomeIcon,
   DocumentDuplicateIcon,
   Cog6ToothIcon,
@@ -10,8 +9,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 
-// Map of links to display in the side navigation.
-// Depending on the size of the application, this would be stored in a database.
 const links = [
   { name: 'ホーム', href: '/dashboard', icon: HomeIcon },
   {
@@ -19,11 +16,6 @@ const links = [
     href: '/dashboard/game-results',
     icon: DocumentDuplicateIcon,
   },
-  // {
-  //   name: '個人成績',
-  //   href: '/dashboard/player-results',
-  //   icon: UserGroupIcon,
-  // },
   {
     name: '設定',
     href: '/dashboard/configPage',

@@ -70,22 +70,46 @@ export async function createPlayer(formData: FormData) {
   }
 
   // Insert data into the database
-  try {
-    const newId = uuidv4();
-    const userId = cookies().get('user')?.value;
-    await sql`
-      INSERT INTO players (Id, Name, UserId)
-      VALUES (${newId},${playerName}, ${userId})
-    `;
-  } catch (error) {
-    console.error('Database Error:', error);
+  let success = false;
+  let retryCount = 0;
+  while (!success && retryCount < 3) {
+    try {
+      const newId = uuidv4();
+      const userId = cookies().get('user')?.value;
+      await sql`
+        INSERT INTO players (Id, Name, UserId)
+        VALUES (${newId},${playerName}, ${userId})
+      `;
+      success = true; // 成功したらループを抜ける
+    } catch (error) {
+      console.error('Database Error:', error);
+      // リトライロジック
+      if (retryCount < 3) {
+        console.log(`Retrying registration in 200ms...`);
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        retryCount++;
+      } else {
+        // リトライ回数を超えた場合はエラーメッセージを返す
+        return {
+          message:
+            'Database Error: Failed to create player after multiple retries.',
+        };
+      }
+    }
+  }
+
+  // リトライが成功した場合
+  if (success) {
     return {
-      message: 'Database Error: Failed to create player.',
+      message: 'Player created successfully.',
+    };
+  } else {
+    // このケースは通常発生しないはずですが、念のため
+    return {
+      message:
+        'Database Error: Failed to create player after multiple retries.',
     };
   }
-  return {
-    message: 'Player created successfully.',
-  };
 }
 
 export async function updatePlayer(formData: FormData) {
@@ -160,7 +184,7 @@ function calcGamePoints(players: any[]) {
   players[0].point =
     (players[0].score * 100 + RANKING_POINTS[0] - BONUS_POINTS - 25000) / 1000;
   for (let i = 1; i < players.length; i++) {
-    if (players[i].score * 100 === players[i - 1].score * 100) {
+    if (players[i].score === players[i - 1].score) {
       players[i].rank = rank;
       players[i].point =
         (players[i].score * 100 +
@@ -198,8 +222,8 @@ export async function registerGame(
     date = new Date();
   }
   const options = {
-    timeZone: 'Asia/Tokyo', // タイムゾーンを設定
-    hour12: false, // 24時間表記にする場合
+    timeZone: 'Asia/Tokyo',
+    hour12: false,
   };
   const japanTimeString = date.toLocaleString('ja-JP', options);
 
@@ -207,13 +231,10 @@ export async function registerGame(
   console.log(resultsWithGamePoints);
 
   const userId = cookies().get('user')?.value;
-
-  // Insert data into the database
   let success = false;
   while (!success && retryCount < 3) {
     try {
       const newId = uuidv4();
-      // 試合結果の登録
       await sql`
         INSERT INTO games (Id,Date, EastPlayer, EastPlayerScore, SouthPlayer, SouthPlayerScore, WestPlayer, WestPlayerScore, NorthPlayer, NorthPlayerScore,UserId)
         VALUES (
@@ -290,39 +311,34 @@ export async function registerGame(
   return { message: 'Game registered successfully.' };
 }
 
-export async function deleteGame(gameResult: GameResult, retryCount = 0) {
-  const Eplayer: Result = {
-    id: gameResult.eastplayer,
-    score: gameResult.eastplayerscore,
-  };
-  const Splayer: Result = {
-    id: gameResult.southplayer,
-    score: gameResult.southplayerscore,
-  };
-  const Wplayer: Result = {
-    id: gameResult.westplayer,
-    score: gameResult.westplayerscore,
-  };
-  const Nplayer: Result = {
-    id: gameResult.northplayer,
-    score: gameResult.northplayerscore,
-  };
+export async function deleteGame(gameResultId: string, retryCount = 0) {
+  const gameResultArray = await sql`
+    SELECT * FROM games
+    WHERE Id = ${gameResultId}
+  `;
+  const gameResult = gameResultArray.rows;
 
   const resultsWithGamePoints = calcGamePoints([
-    Eplayer,
-    Splayer,
-    Wplayer,
-    Nplayer,
+    {
+      id: gameResult[0].eastplayer,
+      score: gameResult[0].eastplayerscore / 100,
+    },
+    {
+      id: gameResult[0].southplayer,
+      score: gameResult[0].southplayerscore / 100,
+    },
+    {
+      id: gameResult[0].westplayer,
+      score: gameResult[0].westplayerscore / 100,
+    },
+    {
+      id: gameResult[0].northplayer,
+      score: gameResult[0].northplayerscore / 100,
+    },
   ]);
 
   try {
     for (const player of resultsWithGamePoints) {
-      // maxScoreのデータを削除するときに要処理
-      // const maxScore = await sql`
-      //   SELECT MaxScore
-      //   FROM players
-      //   WHERE Id = ${player.id};`;
-
       await sql`
       UPDATE players
       SET
@@ -341,7 +357,7 @@ export async function deleteGame(gameResult: GameResult, retryCount = 0) {
     await sql`
       UPDATE games
       SET deleted = true
-      WHERE Id = ${gameResult.id}
+      WHERE Id = ${gameResultId}
     `;
     return { message: 'Deleted Game.' };
   } catch (error) {
@@ -351,7 +367,7 @@ export async function deleteGame(gameResult: GameResult, retryCount = 0) {
     if (retryCount < 5) {
       console.log(`Retrying registration in 200ms...`);
       await new Promise((resolve) => setTimeout(resolve, 200));
-      return deleteGame(gameResult, retryCount + 1);
+      return deleteGame(gameResultId, retryCount + 1);
     } else {
       return {
         message:

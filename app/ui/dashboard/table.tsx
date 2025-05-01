@@ -21,7 +21,6 @@ export default function Table({
   const [sortedPlayers, setSortedPlayers] = useState<Player[]>(players);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');

@@ -10,12 +10,12 @@ export type User = {
 };
 
 export type Result = {
-  id: number;
+  id: string;
   score: number;
 };
 
 export type Player = {
-  id: number;
+  id: string;
   name: string;
   totalscore: number;
   rawscore: number;
@@ -30,14 +30,14 @@ export type Player = {
 };
 
 export type GameResult = {
-  id: number;
+  id: string;
   date: Date;
-  eastplayer: number;
+  eastplayer: string;
   eastplayerscore: number;
-  southplayer: number;
+  southplayer: string;
   southplayerscore: number;
-  westplayer: number;
+  westplayer: string;
   westplayerscore: number;
-  northplayer: number;
+  northplayer: string;
   northplayerscore: number;
 };

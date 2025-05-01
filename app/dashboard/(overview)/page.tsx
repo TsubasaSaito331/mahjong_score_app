@@ -1,11 +1,7 @@
 import Search from '@/app/ui/search';
 import ScoreTable from '@/app/ui/dashboard/table';
 import { Suspense } from 'react';
-import {
-  fetchFilteredGameResults,
-  fetchFilteredPlayers,
-  fetchPlayersPages,
-} from '@/app/lib/data';
+import { fetchFilteredGameResults, fetchFilteredPlayers } from '@/app/lib/data';
 import { Metadata } from 'next';
 import { CreatePlayer, RegisterGame } from '@/app/ui/dashboard/buttons';
 import { cookies } from 'next/headers';
