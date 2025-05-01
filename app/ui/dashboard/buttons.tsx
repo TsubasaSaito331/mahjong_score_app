@@ -17,17 +17,25 @@ import { Player, Result, GameResult } from '@/app/lib/definitions';
 export function CreatePlayer() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [playerName, setPlayerName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    // プレイヤーを登録
-    const formData = new FormData();
-    formData.append('playerName', playerName);
-    createPlayer(formData);
+    try {
+      // プレイヤーを登録
+      const formData = new FormData();
+      formData.append('playerName', playerName);
+      await createPlayer(formData);
 
-    setIsOpen(false);
-    window.location.reload();
+      setIsOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error creating player:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -58,6 +66,7 @@ export function CreatePlayer() {
                 onChange={(e) => setPlayerName(e.target.value)}
                 className="mt-1 w-full rounded-md border p-2"
                 placeholder="名前を入力"
+                disabled={isLoading}
               />
             </div>
             <div className="flex justify-end">
@@ -65,14 +74,20 @@ export function CreatePlayer() {
                 type="button"
                 className="mr-2 rounded-md bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
                 onClick={() => setIsOpen(false)}
+                disabled={isLoading}
               >
                 キャンセル
               </button>
               <button
                 type="submit"
-                className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                className={`rounded-md ${
+                  isLoading
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-blue-500 hover:bg-blue-600'
+                } px-4 py-2 text-white`}
+                disabled={isLoading || !playerName.trim()}
               >
-                登録
+                {isLoading ? '登録中...' : '登録'}
               </button>
             </div>
           </form>
@@ -498,8 +513,12 @@ export function RegisterGame({
     if (option === 'id') {
       newResults[index].id = value;
     } else if (option === 'score') {
-      const scoreValue = parseInt(value, 10);
-      newResults[index].score = isNaN(scoreValue) ? 0 : scoreValue;
+      if (value === '') {
+        newResults[index].score = NaN;
+      } else {
+        const scoreValue = parseInt(value, 10);
+        newResults[index].score = isNaN(scoreValue) ? 0 : scoreValue;
+      }
     }
     setResults(newResults);
   }
@@ -615,10 +634,10 @@ export function RegisterGame({
                 <input
                   id={`score-${index}`}
                   name={`score-${index}`}
-                  type="number"
                   onChange={(e) => setResult(e.target.value, index, 'score')}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   value={result.score}
+                  type="number"
                   placeholder="素点を入力"
                   required
                 />
