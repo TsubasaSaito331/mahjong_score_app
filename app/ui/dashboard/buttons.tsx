@@ -619,13 +619,11 @@ export function RegisterGame({
                 required
               >
                 <option value="">名前を選択</option>
-                {players
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((player) => (
-                    <option key={player.id} value={player.id}>
-                      {player.name}
-                    </option>
-                  ))}
+                {players.map((player) => (
+                  <option key={player.id} value={player.id}>
+                    {player.name}
+                  </option>
+                ))}
               </select>
               <div className="mt-2 flex items-center">
                 <label htmlFor={`score-${index}`} className="sr-only">
@@ -637,9 +635,6 @@ export function RegisterGame({
                   onChange={(e) => setResult(e.target.value, index, 'score')}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   value={result.score}
-                  type="number"
-                  min="-100000"
-                  max="100000"
                   placeholder="素点を入力"
                   required
                 />
