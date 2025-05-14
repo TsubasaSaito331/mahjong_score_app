@@ -638,6 +638,8 @@ export function RegisterGame({
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   value={result.score}
                   type="number"
+                  min="-100000"
+                  max="100000"
                   placeholder="素点を入力"
                   required
                 />
