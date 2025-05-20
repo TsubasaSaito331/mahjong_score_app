@@ -241,13 +241,13 @@ export async function registerGame(
           ${newId},
           ${japanTimeString},
           ${results[0].id},
-          ${results[0].score * 100},
+          ${parseInt(results[0].score as string) * 100},
           ${results[1].id},
-          ${results[1].score * 100},
+          ${parseInt(results[1].score as string) * 100},
           ${results[2].id},
-          ${results[2].score * 100},
+          ${parseInt(results[2].score as string) * 100},
           ${results[3].id},
-          ${results[3].score * 100},
+          ${parseInt(results[3].score as string) * 100},
           ${userId}
           );
       `;
