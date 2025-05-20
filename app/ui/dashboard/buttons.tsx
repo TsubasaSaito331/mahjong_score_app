@@ -80,11 +80,10 @@ export function CreatePlayer() {
               </button>
               <button
                 type="submit"
-                className={`rounded-md ${
-                  isLoading
-                    ? 'cursor-not-allowed bg-gray-400'
-                    : 'bg-blue-500 hover:bg-blue-600'
-                } px-4 py-2 text-white`}
+                className={`rounded-md ${isLoading
+                  ? 'cursor-not-allowed bg-gray-400'
+                  : 'bg-blue-500 hover:bg-blue-600'
+                  } px-4 py-2 text-white`}
                 disabled={isLoading || !playerName.trim()}
               >
                 {isLoading ? '登録中...' : '登録'}
@@ -449,29 +448,29 @@ export function RegisterGame({
   // GameResultオブジェクトからResultsを作成
   const initialResults: Result[] = isEditMode
     ? [
-        {
-          id: gameResult!.eastplayer,
-          score: gameResult!.eastplayerscore / 100,
-        },
-        {
-          id: gameResult!.southplayer,
-          score: gameResult!.southplayerscore / 100,
-        },
-        {
-          id: gameResult!.westplayer,
-          score: gameResult!.westplayerscore / 100,
-        },
-        {
-          id: gameResult!.northplayer,
-          score: gameResult!.northplayerscore / 100,
-        },
-      ]
+      {
+        id: gameResult!.eastplayer,
+        score: (gameResult!.eastplayerscore / 100).toString(),
+      },
+      {
+        id: gameResult!.southplayer,
+        score: (gameResult!.southplayerscore / 100).toString(),
+      },
+      {
+        id: gameResult!.westplayer,
+        score: (gameResult!.westplayerscore / 100).toString(),
+      },
+      {
+        id: gameResult!.northplayer,
+        score: (gameResult!.northplayerscore / 100).toString(),
+      },
+    ]
     : [
-        { id: '', score: NaN },
-        { id: '', score: NaN },
-        { id: '', score: NaN },
-        { id: '', score: NaN },
-      ];
+      { id: '', score: '' },
+      { id: '', score: '' },
+      { id: '', score: '' },
+      { id: '', score: '' },
+    ];
 
   const labels: string[] = [
     '東家プレイヤー',
@@ -514,10 +513,10 @@ export function RegisterGame({
       newResults[index].id = value;
     } else if (option === 'score') {
       if (value === '') {
-        newResults[index].score = NaN;
+        newResults[index].score = "";
       } else {
         const scoreValue = parseInt(value, 10);
-        newResults[index].score = isNaN(scoreValue) ? 0 : scoreValue;
+        newResults[index].score = isNaN(scoreValue) && value !== "-" ? "" : value.toString();
       }
     }
     setResults(newResults);
@@ -637,9 +636,7 @@ export function RegisterGame({
                   onChange={(e) => setResult(e.target.value, index, 'score')}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   value={result.score}
-                  type="number"
-                  min="-100000"
-                  max="100000"
+                  type="text"
                   placeholder="素点を入力"
                   required
                 />
@@ -648,11 +645,10 @@ export function RegisterGame({
             </div>
           ))}
           <div
-            className={`mb-4 rounded-md p-2 text-center font-bold ${
-              totalScore !== 100000
-                ? 'bg-red-100 text-red-700'
-                : 'bg-green-100 text-green-700'
-            }`}
+            className={`mb-4 rounded-md p-2 text-center font-bold ${totalScore !== 100000
+              ? 'bg-red-100 text-red-700'
+              : 'bg-green-100 text-green-700'
+              }`}
             role="status"
           >
             合計点: {totalScore} / 残り: {100000 - totalScore}
@@ -675,11 +671,10 @@ export function RegisterGame({
             </button>
             <button
               type="submit"
-              className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm ${
-                totalScore === 100000 && !isLoading
-                  ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-                  : 'cursor-not-allowed bg-gray-400'
-              }`}
+              className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm ${totalScore === 100000 && !isLoading
+                ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+                : 'cursor-not-allowed bg-gray-400'
+                }`}
               disabled={totalScore !== 100000 || isLoading}
             >
               {isLoading
@@ -687,8 +682,8 @@ export function RegisterGame({
                   ? '更新中...'
                   : '登録中...'
                 : isEditMode
-                ? '更新'
-                : '登録'}
+                  ? '更新'
+                  : '登録'}
             </button>
           </div>
         </form>

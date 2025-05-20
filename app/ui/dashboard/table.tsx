@@ -5,10 +5,7 @@ import { DeletePlayer, UpdatePlayer } from './buttons';
 import { LuArrowDownUp } from 'react-icons/lu';
 import { Player, GameResult } from '@/app/lib/definitions';
 import PlayerDetailModal from './player-detail-modal';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function Table({
   players,

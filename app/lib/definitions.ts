@@ -11,7 +11,7 @@ export type User = {
 
 export type Result = {
   id: string;
-  score: number;
+  score: string;
 };
 
 export type Player = {
