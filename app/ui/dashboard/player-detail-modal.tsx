@@ -3,6 +3,7 @@
 import Modal from '@/app/components/Modal';
 import { Player, GameResult, HeadToHeadResult } from '@/app/lib/definitions';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Line, Pie } from 'react-chartjs-2';
 import { LuArrowDownUp } from 'react-icons/lu';
 import {
@@ -46,6 +47,7 @@ export default function PlayerDetailModal({
   gameResults,
   allPlayers = [],
 }: PlayerDetailModalProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'stats' | 'headToHead'>('stats');
   const [scoreHistory, setScoreHistory] = useState<{
     dates: string[];
@@ -234,6 +236,12 @@ export default function PlayerDetailModal({
   // ソート機能
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handleOpponentClick = (opponentId: string) => {
+    // 現在のプレイヤーとクリックしたプレイヤーの両方を選択してgame-resultページに移行
+    const playerIds = [player.id, opponentId].join(',');
+    router.push(`/dashboard/game-results?players=${playerIds}`);
   };
 
   const handleHeadToHeadSort = (columnName: string) => {
@@ -736,7 +744,7 @@ export default function PlayerDetailModal({
                           onClick={() => handleHeadToHeadSort('wins')}
                           className="flex items-center justify-center gap-0.5 hover:text-blue-600"
                         >
-                          勝利
+                          勝
                           <LuArrowDownUp className="inline h-2 w-2" />
                         </button>
                       </th>
@@ -745,7 +753,7 @@ export default function PlayerDetailModal({
                           onClick={() => handleHeadToHeadSort('losses')}
                           className="flex items-center justify-center gap-0.5 hover:text-blue-600"
                         >
-                          敗北
+                          負
                           <LuArrowDownUp className="inline h-2 w-2" />
                         </button>
                       </th>
@@ -775,7 +783,14 @@ export default function PlayerDetailModal({
                     {sortedHeadToHead.map((result) => (
                       <tr key={result.opponentId} className="hover:bg-gray-50">
                         <td className="px-1 py-2 font-medium text-gray-600">
-                          {result.opponentName}
+                          <button
+                            onClick={() =>
+                              handleOpponentClick(result.opponentId)
+                            }
+                            className="rounded text-blue-600 hover:text-blue-800 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                          >
+                            {result.opponentName}
+                          </button>
                         </td>
                         <td className="px-1 py-2 text-center">
                           {result.totalGames}
