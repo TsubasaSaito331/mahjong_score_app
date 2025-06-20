@@ -31,8 +31,10 @@ export default async function Page({
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
         <h1 className="text-2xl font-bold">{title} 成績表</h1>
-        <CreatePlayer />
-        <RegisterGame players={players} />
+        <div className="flex items-center gap-2">
+          <CreatePlayer />
+          <RegisterGame players={players} />
+        </div>
       </div>
       <div className="overflow-x-auto">
         <Suspense key={query + currentPage}>
