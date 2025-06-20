@@ -3,7 +3,7 @@ import { User } from './definitions';
 import { unstable_noStore as noStore } from 'next/cache';
 import { cookies } from 'next/headers';
 
-const ITEMS_PER_PAGE = 100;
+const ITEMS_PER_PAGE = 1000;
 export async function fetchFilteredPlayers(query: string, currentPage: number) {
   noStore();
   try {
