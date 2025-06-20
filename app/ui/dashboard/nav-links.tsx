@@ -16,11 +16,6 @@ const links = [
     href: '/dashboard/game-results',
     icon: DocumentDuplicateIcon,
   },
-  {
-    name: '設定',
-    href: '/dashboard/configPage',
-    icon: Cog6ToothIcon,
-  },
 ];
 
 export default function NavLinks() {
