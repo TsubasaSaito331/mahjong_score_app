@@ -66,44 +66,131 @@ export async function getPlayerId(
 export async function fetchFilteredGameResults(
   query: string,
   currentPage: number,
+  startDate?: string,
+  endDate?: string,
+  playerIds?: string[],
+) {
+  noStore();
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const userId = cookies().get('user')?.value;
+    if (userId) {
+      // 基本的な条件
+      let sqlQuery = `
+        SELECT * FROM games
+        WHERE deleted = false AND UserId = $1
+      `;
+      let params: any[] = [userId];
+
+      // 日付期間フィルター
+      if (startDate) {
+        params.push(startDate);
+        sqlQuery += ` AND Date >= $${params.length}`;
+      }
+      if (endDate) {
+        params.push(endDate + ' 23:59:59');
+        sqlQuery += ` AND Date <= $${params.length}`;
+      }
+
+      // プレイヤーフィルター
+      if (playerIds && playerIds.length > 0) {
+        if (playerIds.length === 1) {
+          params.push(playerIds[0]);
+          sqlQuery += ` AND (EastPlayer = $${params.length} OR SouthPlayer = $${params.length} OR WestPlayer = $${params.length} OR NorthPlayer = $${params.length})`;
+        } else {
+          // 複数プレイヤーのAND検索
+          const playerConditions = playerIds.map((playerId) => {
+            params.push(playerId);
+            return `(EastPlayer = $${params.length} OR SouthPlayer = $${params.length} OR WestPlayer = $${params.length} OR NorthPlayer = $${params.length})`;
+          });
+          sqlQuery += ` AND (${playerConditions.join(' AND ')})`;
+        }
+      } else if (query) {
+        // 従来のテキスト検索
+        const searchPlayerIds = await getPlayerId(query, userId);
+        if (searchPlayerIds.length > 0) {
+          const playerConditions = searchPlayerIds.map((player) => {
+            params.push(player.id);
+            return `(EastPlayer = $${params.length} OR SouthPlayer = $${params.length} OR WestPlayer = $${params.length} OR NorthPlayer = $${params.length})`;
+          });
+          sqlQuery += ` AND (${playerConditions.join(' OR ')})`;
+        }
+      }
+
+      sqlQuery += ` ORDER BY Date DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`;
+
+      const gameResults = await sql.query(sqlQuery, params);
+      return gameResults.rows;
+    }
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('試合結果の取得に失敗しました.');
+  }
+}
+
+export async function fetchGameResultsPages(
+  query: string,
+  startDate?: string,
+  endDate?: string,
+  playerIds?: string[],
 ) {
   noStore();
   try {
     const userId = cookies().get('user')?.value;
     if (userId) {
-      if (query) {
-        const playerIds = await getPlayerId(query, userId);
-        if (playerIds.length !== 0) {
-          const gameResultsPromises = playerIds.map(async (player) => {
-            const results = await sql`
-              SELECT * FROM games
-              WHERE deleted = false
-                AND UserId = ${userId}
-                AND (EastPlayer = ${player.id} OR SouthPlayer = ${player.id} OR WestPlayer = ${player.id} OR NorthPlayer = ${player.id})
-              ORDER BY Date DESC;
-            `;
-            return results.rows;
-          });
-          // Promise.all を使用して全ての gameResultsPromises が解決するのを待つ
-          const gameResultsArray = await Promise.all(gameResultsPromises);
-
-          // gameResultsArray をフラットな配列に変換
-          const gameResults = gameResultsArray.flat();
-
-          return gameResults;
-        }
-      } else {
-        const gameResults = await sql`
-        SELECT * FROM games
-        WHERE deleted = false AND UserId = ${userId}
-        ORDER BY Date DESC;
+      // 基本的な条件
+      let sqlQuery = `
+        SELECT COUNT(*) FROM games
+        WHERE deleted = false AND UserId = $1
       `;
-        return gameResults.rows;
+      let params: any[] = [userId];
+
+      // 日付期間フィルター
+      if (startDate) {
+        params.push(startDate);
+        sqlQuery += ` AND Date >= $${params.length}`;
       }
+      if (endDate) {
+        params.push(endDate + ' 23:59:59');
+        sqlQuery += ` AND Date <= $${params.length}`;
+      }
+
+      // プレイヤーフィルター
+      if (playerIds && playerIds.length > 0) {
+        if (playerIds.length === 1) {
+          params.push(playerIds[0]);
+          sqlQuery += ` AND (EastPlayer = $${params.length} OR SouthPlayer = $${params.length} OR WestPlayer = $${params.length} OR NorthPlayer = $${params.length})`;
+        } else {
+          // 複数プレイヤーのAND検索
+          const playerConditions = playerIds.map((playerId) => {
+            params.push(playerId);
+            return `(EastPlayer = $${params.length} OR SouthPlayer = $${params.length} OR WestPlayer = $${params.length} OR NorthPlayer = $${params.length})`;
+          });
+          sqlQuery += ` AND (${playerConditions.join(' AND ')})`;
+        }
+      } else if (query) {
+        // 従来のテキスト検索
+        const searchPlayerIds = await getPlayerId(query, userId);
+        if (searchPlayerIds.length > 0) {
+          const playerConditions = searchPlayerIds.map((player) => {
+            params.push(player.id);
+            return `(EastPlayer = $${params.length} OR SouthPlayer = $${params.length} OR WestPlayer = $${params.length} OR NorthPlayer = $${params.length})`;
+          });
+          sqlQuery += ` AND (${playerConditions.join(' OR ')})`;
+        }
+      }
+
+      const count = await sql.query(sqlQuery, params);
+      const totalPages = Math.ceil(
+        Number(count.rows[0].count) / ITEMS_PER_PAGE,
+      );
+      return totalPages;
     }
+    return 0;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('試合結果の取得に失敗しました.');
+    throw new Error('試合結果ページ数の取得に失敗しました.');
   }
 }
 

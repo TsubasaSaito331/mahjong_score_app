@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import { LuArrowDownUp } from 'react-icons/lu';
 import { GameResult, Player } from '@/app/lib/definitions';
 import { DeleteGameResult } from './buttons';
 import { RegisterGame } from '@/app/ui/dashboard/buttons';
@@ -19,13 +17,13 @@ export default function GameResultTable({
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-      timeZone: 'UTC', // タイムゾーンをUTCに設定
+      timeZone: 'UTC',
     });
     const timeString = date.toLocaleTimeString('ja-JP', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
-      timeZone: 'UTC', // タイムゾーンをUTCに設定
+      timeZone: 'UTC',
     });
     return `${dateString}(${weekdays[date.getDay() - 1]}) ${timeString}`;
   };
@@ -34,18 +32,9 @@ export default function GameResultTable({
     return players.find((player) => player.id === id)?.name;
   };
 
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [sortedGameResults, setSortedGameResults] =
-    useState<GameResult[]>(gameResults);
-
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
-
   const BONUS_POINTS = 5000;
   const RANKING_POINTS = [30000 + BONUS_POINTS * 4, 10000, -10000, -30000];
 
-  // 順位点に対応するポイントを計算
   const calcGamePoint = (gameResult: GameResult, index: number): string => {
     const scores: number[] = [
       gameResult.eastplayerscore,
@@ -86,65 +75,6 @@ export default function GameResultTable({
       : `${calculatedScore}pt`;
   };
 
-  const handleSort = (columnName: string) => {
-    switch (columnName) {
-      case 'date':
-        if (sortOrder === 'desc') {
-          sortedGameResults.sort((a, b) => a.date.getTime() - b.date.getTime());
-        } else {
-          sortedGameResults.sort((a, b) => b.date.getTime() - a.date.getTime());
-        }
-      case 'eastplayerscore':
-        if (sortOrder === 'desc') {
-          sortedGameResults.sort(
-            (a, b) => a.eastplayerscore - b.eastplayerscore,
-          );
-        } else {
-          sortedGameResults.sort(
-            (a, b) => b.eastplayerscore - a.eastplayerscore,
-          );
-        }
-        break;
-      case 'southplayerscore':
-        if (sortOrder === 'desc') {
-          sortedGameResults.sort(
-            (a, b) => a.southplayerscore - b.southplayerscore,
-          );
-        } else {
-          sortedGameResults.sort(
-            (a, b) => b.southplayerscore - a.southplayerscore,
-          );
-        }
-        break;
-      case 'westplayerscore':
-        if (sortOrder === 'desc') {
-          sortedGameResults.sort(
-            (a, b) => a.westplayerscore - b.westplayerscore,
-          );
-        } else {
-          sortedGameResults.sort(
-            (a, b) => b.westplayerscore - a.westplayerscore,
-          );
-        }
-        break;
-      case 'northplayerscore':
-        if (sortOrder === 'desc') {
-          sortedGameResults.sort(
-            (a, b) => a.northplayerscore - b.northplayerscore,
-          );
-        } else {
-          sortedGameResults.sort(
-            (a, b) => b.northplayerscore - a.northplayerscore,
-          );
-        }
-        break;
-
-      default:
-        break;
-    }
-    toggleSortOrder();
-  };
-
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
@@ -152,35 +82,23 @@ export default function GameResultTable({
           <table className="w-full md:hidden">
             <thead className="rounded-lg text-center text-sm font-normal">
               <tr>
-                <th scope="col" className="font-small px-3 py-3 sm:pl-6 ">
+                <th scope="col" className="font-small px-3 py-3 sm:pl-6">
                   東家
-                  <button onClick={() => handleSort('eastplayerscore')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
                 <th scope="col" className="font-small px-3 py-3 sm:pl-6">
                   南家
-                  <button onClick={() => handleSort('southplayerscore')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
                 <th scope="col" className="font-small px-3 py-3 sm:pl-6">
                   西家
-                  <button onClick={() => handleSort('westplayerscore')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
                 <th scope="col" className="font-small px-3 py-3 sm:pl-6">
                   北家
-                  <button onClick={() => handleSort('northplayerscore')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
               </tr>
             </thead>
-            {sortedGameResults?.map((gameResult) => (
+            {gameResults?.map((gameResult) => (
               <tbody className="border-b bg-white" key={gameResult.id}>
-                <tr className="w-full py-3  text-xs last-of-type:border-none">
+                <tr className="w-full py-3 text-xs last-of-type:border-none">
                   <td colSpan={4} className="whitespace-nowrap px-3 py-1">
                     <div className="flex items-center">
                       {formatDate(gameResult.date)}
@@ -194,7 +112,7 @@ export default function GameResultTable({
                     </div>
                   </td>
                 </tr>
-                <tr className="w-full  py-3 text-center text-xs last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+                <tr className="w-full py-3 text-center text-xs last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
                   <td className="whitespace-nowrap px-1 py-1">
                     {playerName(gameResult.eastplayer)}
                     <br />
@@ -232,50 +150,35 @@ export default function GameResultTable({
               <tr>
                 <th scope="col" className="px-3 py-5 font-medium">
                   日付
-                  <button onClick={() => handleSort('date')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                   東家
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   スコア
-                  <button onClick={() => handleSort('eastplayerscore')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                   南家
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   スコア
-                  <button onClick={() => handleSort('southplayerscore')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                   西家
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   スコア
-                  <button onClick={() => handleSort('westplayerscore')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
                 <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                   北家
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
                   スコア
-                  <button onClick={() => handleSort('northplayerscore')}>
-                    <LuArrowDownUp />
-                  </button>
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              {sortedGameResults?.map((gameResult) => (
+              {gameResults?.map((gameResult) => (
                 <tr
                   key={gameResult.id}
                   className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"

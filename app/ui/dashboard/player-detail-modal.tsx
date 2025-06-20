@@ -158,12 +158,58 @@ export default function PlayerDetailModal({
             } else {
               draws++;
             }
-            totalPointDiff += playerScore - opponentScore;
+
+            // 順位点を考慮したポイント計算
+            const BONUS_POINTS = 5000;
+            const RANKING_POINTS = [
+              30000 + BONUS_POINTS * 4,
+              10000,
+              -10000,
+              -30000,
+            ];
+
+            // プレイヤーのポイント計算
+            let playerPoint = 0;
+            if (playerRank === 1) {
+              playerPoint =
+                (playerScore + RANKING_POINTS[0] - BONUS_POINTS - 25000) / 1000;
+            } else if (playerRank === 2) {
+              playerPoint =
+                (playerScore + RANKING_POINTS[1] - BONUS_POINTS - 25000) / 1000;
+            } else if (playerRank === 3) {
+              playerPoint =
+                (playerScore + RANKING_POINTS[2] - BONUS_POINTS - 25000) / 1000;
+            } else {
+              playerPoint =
+                (playerScore + RANKING_POINTS[3] - BONUS_POINTS - 25000) / 1000;
+            }
+
+            // 対戦相手のポイント計算
+            let opponentPoint = 0;
+            if (opponentRank === 1) {
+              opponentPoint =
+                (opponentScore + RANKING_POINTS[0] - BONUS_POINTS - 25000) /
+                1000;
+            } else if (opponentRank === 2) {
+              opponentPoint =
+                (opponentScore + RANKING_POINTS[1] - BONUS_POINTS - 25000) /
+                1000;
+            } else if (opponentRank === 3) {
+              opponentPoint =
+                (opponentScore + RANKING_POINTS[2] - BONUS_POINTS - 25000) /
+                1000;
+            } else {
+              opponentPoint =
+                (opponentScore + RANKING_POINTS[3] - BONUS_POINTS - 25000) /
+                1000;
+            }
+
+            totalPointDiff += playerPoint - opponentPoint;
           },
         );
 
         const winRate = totalGames > 0 ? (wins / totalGames) * 100 : 0;
-        const pointDifference = totalPointDiff / 1000; // ポイント差を1000で割って表示
+        const pointDifference = totalPointDiff; // 既に1000で割った値なのでそのまま使用
 
         return {
           opponentId,
@@ -312,7 +358,6 @@ export default function PlayerDetailModal({
       dates.push(formattedDate);
       scores.push(cumulativeScore);
     });
-    console.log(scores);
 
     setScoreHistory({ dates, scores });
   }, [player.id, gameResults]);
