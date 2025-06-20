@@ -42,7 +42,7 @@ export function CreatePlayer() {
     <div>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex h-8 items-center rounded-lg bg-blue-600 px-3 text-xs font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        className="flex h-8 items-center rounded-lg bg-blue-600 px-2 text-xs font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
       >
         <IoPersonAdd className="h-4 w-4" />
       </button>
@@ -591,7 +591,7 @@ export function RegisterGame({
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex h-8 items-center rounded-lg bg-blue-600 px-3 text-xs font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          className="flex h-8 items-center rounded-lg bg-blue-600 px-2 text-xs font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         >
           <MdOutlinePlaylistAdd className="h-4 w-4" />
         </button>
