@@ -41,3 +41,14 @@ export type GameResult = {
   northplayer: string;
   northplayerscore: number;
 };
+
+export type HeadToHeadResult = {
+  opponentId: string;
+  opponentName: string;
+  totalGames: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winRate: number;
+  pointDifference: number;
+};

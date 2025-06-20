@@ -6,7 +6,6 @@ import { LuArrowDownUp } from 'react-icons/lu';
 import { Player, GameResult } from '@/app/lib/definitions';
 import PlayerDetailModal from './player-detail-modal';
 
-
 export default function Table({
   players,
   gameResults,
@@ -557,6 +556,7 @@ export default function Table({
               isOpen={isDetailModalOpen}
               onClose={closeDetailModal}
               gameResults={gameResults}
+              allPlayers={players}
             />
           )}
         </div>

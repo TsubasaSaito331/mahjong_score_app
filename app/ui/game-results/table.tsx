@@ -27,7 +27,7 @@ export default function GameResultTable({
       hour12: false,
       timeZone: 'UTC', // タイムゾーンをUTCに設定
     });
-    return `${dateString}(${weekdays[date.getDay()]}) ${timeString}`;
+    return `${dateString}(${weekdays[date.getDay() - 1]}) ${timeString}`;
   };
 
   const playerName = (id: string): string | undefined => {
