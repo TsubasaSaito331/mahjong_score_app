@@ -44,14 +44,14 @@ export default function ScoreDisplayPage() {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex h-6 w-6 items-center justify-center ${
+      className={`flex h-4 w-4 items-center justify-center ${
         disabled ? 'opacity-30' : 'opacity-100'
       }`}
     >
       {direction === 'up' ? (
-        <div className="h-0 w-0 border-b-[20px] border-l-[14px] border-r-[14px] border-b-white border-l-transparent border-r-transparent"></div>
+        <div className="h-0 w-0 border-b-[16px] border-l-[12px] border-r-[12px] border-b-white border-l-transparent border-r-transparent"></div>
       ) : (
-        <div className="h-0 w-0 border-l-[14px] border-r-[14px] border-t-[20px] border-l-transparent border-r-transparent border-t-white"></div>
+        <div className="h-0 w-0 border-l-[12px] border-r-[12px] border-t-[16px] border-l-transparent border-r-transparent border-t-white"></div>
       )}
     </button>
   );
@@ -86,11 +86,11 @@ export default function ScoreDisplayPage() {
         case 'top':
           return 'absolute top-12 left-1/2 transform -translate-x-1/2';
         case 'right':
-          return 'absolute top-1/2 -right-10 transform -translate-y-1/2';
+          return 'absolute top-1/2 -right-4 transform -translate-y-1/2';
         case 'bottom':
           return 'absolute bottom-12 left-1/2 transform -translate-x-1/2';
         case 'left':
-          return 'absolute top-1/2 -left-10 transform -translate-y-1/2';
+          return 'absolute top-1/2 -left-4 transform -translate-y-1/2';
         default:
           return '';
       }
@@ -142,7 +142,7 @@ export default function ScoreDisplayPage() {
               <>
                 {isScoreRotated ? (
                   // 左・右の場合：百、千、万の順番
-                  <div className="ml-24 flex space-x-7">
+                  <div className="ml-16 flex space-x-4">
                     <>
                       <TriangleButton
                         direction="up"
@@ -160,7 +160,7 @@ export default function ScoreDisplayPage() {
                   </div>
                 ) : (
                   // 上・下の場合：万、千、百の順番
-                  <div className="mr-24 flex space-x-7">
+                  <div className="mr-16 flex space-x-4">
                     <>
                       <TriangleButton
                         direction="up"
@@ -181,11 +181,11 @@ export default function ScoreDisplayPage() {
             )}
 
             <div
-              className={`cursor-pointer text-8xl font-bold text-white ${getScoreRotationClasses(
+              className={`cursor-pointer text-6xl font-bold text-white ${getScoreRotationClasses(
                 player.position,
               )} ${
                 isShowingDifference
-                  ? 'rounded-lg px-10 py-10 hover:bg-white hover:bg-opacity-20'
+                  ? 'rounded-lg px-2 py-2 hover:bg-white hover:bg-opacity-20'
                   : ''
               }`}
               onClick={handleScoreClick}
@@ -197,7 +197,7 @@ export default function ScoreDisplayPage() {
               <>
                 {isScoreRotated ? (
                   // 左・右の場合：百、千、万の順番
-                  <div className="ml-24 flex space-x-7">
+                  <div className="ml-16 flex space-x-4">
                     <>
                       <TriangleButton
                         direction="down"
@@ -215,7 +215,7 @@ export default function ScoreDisplayPage() {
                   </div>
                 ) : (
                   // 上・下の場合：万、千、百の順番
-                  <div className="mr-24 flex space-x-7">
+                  <div className="mr-16 flex space-x-4">
                     <>
                       <TriangleButton
                         direction="down"
@@ -243,20 +243,20 @@ export default function ScoreDisplayPage() {
   return (
     <div className="flex h-screen w-full flex-col bg-gray-900">
       {/* ヘッダー */}
-      <div className="flex flex-shrink-0 items-center justify-between bg-gray-800 p-4">
+      <div className="flex flex-shrink-0 items-center justify-between bg-gray-800 p-2">
         <button
           onClick={() =>
             setPlayers((prev) =>
               prev.map((player) => ({ ...player, score: 25000 })),
             )
           }
-          className="rounded-md bg-red-600 px-4 py-2 text-xl text-white transition-colors hover:bg-red-700"
+          className="rounded-md bg-red-600 px-4 py-1.5 text-sm text-white transition-colors hover:bg-red-700"
         >
           RESET
         </button>
         <Link
           href="/dashboard"
-          className="rounded-md bg-blue-600 px-4 py-2 text-lg text-white transition-colors hover:bg-blue-700"
+          className="rounded-md bg-blue-600 px-4 py-1.5 text-sm text-white transition-colors hover:bg-blue-700"
         >
           成績表へ
         </Link>
@@ -272,8 +272,8 @@ export default function ScoreDisplayPage() {
       </div>
 
       {/* フッター */}
-      <div className="flex-shrink-0 bg-gray-800 p-4 text-center">
-        <div className="text-4xl font-bold text-white">TOTAL: {totalScore}</div>
+      <div className="flex-shrink-0 bg-gray-800 p-2 text-center">
+        <div className="text-3xl font-bold text-white">TOTAL: {totalScore}</div>
       </div>
     </div>
   );
