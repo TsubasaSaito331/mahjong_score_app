@@ -4,6 +4,7 @@ import {
   HomeIcon,
   DocumentDuplicateIcon,
   Cog6ToothIcon,
+  CalculatorIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -15,6 +16,11 @@ const links = [
     name: '試合結果',
     href: '/dashboard/game-results',
     icon: DocumentDuplicateIcon,
+  },
+  {
+    name: '点数表示',
+    href: '/score-display',
+    icon: CalculatorIcon,
   },
 ];
 
