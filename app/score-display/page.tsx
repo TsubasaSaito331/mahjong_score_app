@@ -142,7 +142,7 @@ export default function ScoreDisplayPage() {
               <>
                 {isScoreRotated ? (
                   // 左・右の場合：百、千、万の順番
-                  <div className="ml-16 flex space-x-4">
+                  <div className="ml-20 flex space-x-4">
                     <>
                       <TriangleButton
                         direction="up"
@@ -160,7 +160,7 @@ export default function ScoreDisplayPage() {
                   </div>
                 ) : (
                   // 上・下の場合：万、千、百の順番
-                  <div className="mr-16 flex space-x-4">
+                  <div className="mr-20 flex space-x-4">
                     <>
                       <TriangleButton
                         direction="up"
@@ -197,7 +197,7 @@ export default function ScoreDisplayPage() {
               <>
                 {isScoreRotated ? (
                   // 左・右の場合：百、千、万の順番
-                  <div className="ml-16 flex space-x-4">
+                  <div className="ml-20 flex space-x-4">
                     <>
                       <TriangleButton
                         direction="down"
@@ -215,7 +215,7 @@ export default function ScoreDisplayPage() {
                   </div>
                 ) : (
                   // 上・下の場合：万、千、百の順番
-                  <div className="mr-16 flex space-x-4">
+                  <div className="mr-20 flex space-x-4">
                     <>
                       <TriangleButton
                         direction="down"
