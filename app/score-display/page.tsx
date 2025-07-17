@@ -44,14 +44,13 @@ export default function ScoreDisplayPage() {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex h-4 w-4 items-center justify-center ${
-        disabled ? 'opacity-30' : 'opacity-100'
-      }`}
+      className={`flex h-4 w-4 items-center justify-center ${disabled ? 'opacity-30' : 'opacity-100'
+        }`}
     >
       {direction === 'up' ? (
-        <div className="h-0 w-0 border-b-[16px] border-l-[12px] border-r-[12px] border-b-white border-l-transparent border-r-transparent"></div>
+        <div className="h-0 w-0 border-b-[20px] border-l-[16px] border-r-[16px] border-b-white border-l-transparent border-r-transparent"></div>
       ) : (
-        <div className="h-0 w-0 border-l-[12px] border-r-[12px] border-t-[16px] border-l-transparent border-r-transparent border-t-white"></div>
+        <div className="h-0 w-0 border-l-[16px] border-r-[16px] border-t-[20px] border-l-transparent border-r-transparent border-t-white"></div>
       )}
     </button>
   );
@@ -137,12 +136,12 @@ export default function ScoreDisplayPage() {
             player.position,
           )} ${getRotationClasses(player.position)}`}
         >
-          <div className="flex flex-col items-center space-y-2">
+          <div className="flex flex-col items-center space-y-4">
             {!isShowingDifference && (
               <>
                 {isScoreRotated ? (
                   // 左・右の場合：百、千、万の順番
-                  <div className="ml-20 flex space-x-4">
+                  <div className="flex space-x-8">
                     <>
                       <TriangleButton
                         direction="up"
@@ -160,7 +159,7 @@ export default function ScoreDisplayPage() {
                   </div>
                 ) : (
                   // 上・下の場合：万、千、百の順番
-                  <div className="mr-20 flex space-x-4">
+                  <div className="flex space-x-8">
                     <>
                       <TriangleButton
                         direction="up"
@@ -183,11 +182,10 @@ export default function ScoreDisplayPage() {
             <div
               className={`cursor-pointer text-6xl font-bold text-white ${getScoreRotationClasses(
                 player.position,
-              )} ${
-                isShowingDifference
-                  ? 'rounded-lg px-2 py-2 hover:bg-white hover:bg-opacity-20'
-                  : ''
-              }`}
+              )} ${isShowingDifference
+                ? 'rounded-lg px-2 py-2 hover:bg-white hover:bg-opacity-20'
+                : ''
+                }`}
               onClick={handleScoreClick}
             >
               {getDifferenceDisplay()}
@@ -197,7 +195,7 @@ export default function ScoreDisplayPage() {
               <>
                 {isScoreRotated ? (
                   // 左・右の場合：百、千、万の順番
-                  <div className="ml-20 flex space-x-4">
+                  <div className="flex space-x-8">
                     <>
                       <TriangleButton
                         direction="down"
@@ -215,7 +213,7 @@ export default function ScoreDisplayPage() {
                   </div>
                 ) : (
                   // 上・下の場合：万、千、百の順番
-                  <div className="mr-20 flex space-x-4">
+                  <div className="flex space-x-8">
                     <>
                       <TriangleButton
                         direction="down"
