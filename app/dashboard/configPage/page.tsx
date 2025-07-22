@@ -1,10 +1,8 @@
-import ScoreTable from '@/app/ui/dashboard/table';
 import { Suspense } from 'react';
 import { fetchAllPlayers, fetchFilteredGameResults } from '@/app/lib/data';
 import { Metadata } from 'next';
-import { RegisterGame } from '@/app/ui/dashboard/buttons';
-import GameResultTable from '@/app/ui/game-results/table';
 import { Save } from '@/app/ui/configPage/buttons';
+import { RecalculateStats } from '@/app/ui/configPage/recalculate-button';
 
 export const metadata: Metadata = {
   title: '個人成績',
@@ -34,6 +32,7 @@ export default async function Page({
       </div>
       <div>
         <Save></Save>
+        <RecalculateStats />
       </div>
     </div>
   );

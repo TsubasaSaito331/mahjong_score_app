@@ -52,3 +52,15 @@ export type HeadToHeadResult = {
   winRate: number;
   pointDifference: number;
 };
+
+export type PlayerStats = {
+  id: string;
+  totalscore: number;
+  rawscore: number;
+  games: number;
+  firstnum: number;
+  secondnum: number;
+  thirdnum: number;
+  fourthnum: number;
+  maxscore: number;
+};

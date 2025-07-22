@@ -11,7 +11,7 @@ export async function fetchFilteredPlayers(query: string, currentPage: number) {
     const players = await sql`
       SELECT *, RANK() OVER (ORDER BY TotalScore DESC) AS rank
       FROM players
-      WHERE deleted = false AND UserId = ${userId} AND name ILIKE ${`%${query}%`};
+      WHERE deleted = false AND UserId = ${userId};
     `;
     const playersWithRank = players.rows.map((player: any) => ({
       ...player,

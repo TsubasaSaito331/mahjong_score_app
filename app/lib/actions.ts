@@ -1,8 +1,8 @@
 'use server';
-import { sql } from '@vercel/postgres';
+import { sql, db } from '@vercel/postgres';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-import { GameResult, Result } from './definitions';
+import { GameResult, Result, PlayerStats } from './definitions';
 import { cookies } from 'next/headers';
 import { getUser } from './data';
 import bcrypt from 'bcrypt';
@@ -109,6 +109,114 @@ export async function createPlayer(formData: FormData) {
       message:
         'Database Error: Failed to create player after multiple retries.',
     };
+  }
+}
+
+export async function recalculateAllPlayersStats() {
+  const client = await db.connect();
+  try {
+    const userId = cookies().get('user')?.value;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
+    await client.query('BEGIN');
+
+    // 1. 対象ユーザーの全ゲーム結果を取得
+    const gamesResult = await client.query(
+      `SELECT * FROM games WHERE UserId = $1 AND deleted = false ORDER BY Date ASC;`,
+      [userId],
+    );
+    const allGames = gamesResult.rows as GameResult[];
+
+    // プレイヤーごとの成績をメモリ上で計算するためのMap
+    const playerStatsMap = new Map<string, PlayerStats>();
+
+    // 2. 取得した全ゲームをループして成績を計算
+    for (const game of allGames) {
+      const gamePlayers = [
+        { id: game.eastplayer, score: game.eastplayerscore / 100 },
+        { id: game.southplayer, score: game.southplayerscore / 100 },
+        { id: game.westplayer, score: game.westplayerscore / 100 },
+        { id: game.northplayer, score: game.northplayerscore / 100 },
+      ];
+
+      // Mapにプレイヤーが存在しない場合は初期化
+      for (const p of gamePlayers) {
+        if (!p.id) continue;
+        if (!playerStatsMap.has(p.id)) {
+          playerStatsMap.set(p.id, {
+            id: p.id,
+            totalscore: 0,
+            rawscore: 0,
+            games: 0,
+            firstnum: 0,
+            secondnum: 0,
+            thirdnum: 0,
+            fourthnum: 0,
+            maxscore: -100000,
+          });
+        }
+      }
+
+      const resultsWithGamePoints = calcGamePoints(gamePlayers);
+
+      for (const playerResult of resultsWithGamePoints) {
+        if (!playerResult.id) continue;
+        const stats = playerStatsMap.get(playerResult.id)!; // !で非nullを断言
+        stats.totalscore += playerResult.point;
+        stats.rawscore += (playerResult.score * 100 - 25000) / 1000;
+        stats.games += 1;
+        if (playerResult.rank === 1) stats.firstnum += 1;
+        if (playerResult.rank === 2) stats.secondnum += 1;
+        if (playerResult.rank === 3) stats.thirdnum += 1;
+        if (playerResult.rank === 4) stats.fourthnum += 1;
+        if (stats.maxscore < playerResult.score * 100) {
+          stats.maxscore = playerResult.score * 100;
+        }
+      }
+    }
+
+    // 3. 全プレイヤーの成績を一度リセット
+    await client.query(
+      `UPDATE players
+        SET
+          TotalScore = 0, RawScore = 0, Games = 0,
+          FirstNum = 0, SecondNum = 0, ThirdNum = 0, FourthNum = 0,
+          MaxScore = -100000
+        WHERE UserId = $1 AND deleted = false;`,
+      [userId],
+    );
+
+    // 4. 計算結果をデータベースに反映
+    for (const stats of Array.from(playerStatsMap.values())) {
+      await client.query(
+        `UPDATE players
+          SET
+            TotalScore = $1, RawScore = $2, Games = $3, FirstNum = $4,
+            SecondNum = $5, ThirdNum = $6, FourthNum = $7, MaxScore = $8
+          WHERE Id = $9;`,
+        [
+          stats.totalscore,
+          stats.rawscore,
+          stats.games,
+          stats.firstnum,
+          stats.secondnum,
+          stats.thirdnum,
+          stats.fourthnum,
+          stats.maxscore,
+          stats.id,
+        ],
+      );
+    }
+    await client.query('COMMIT');
+    return { message: 'All player stats recalculated successfully.' };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Database Error:', error);
+    return { message: 'Database Error: Failed to recalculate player stats.' };
+  } finally {
+    client.release();
   }
 }
 
