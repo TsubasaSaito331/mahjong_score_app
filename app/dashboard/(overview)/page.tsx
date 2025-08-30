@@ -22,12 +22,18 @@ async function ScoreData({
   startDate,
   endDate,
   limit,
+  bonusPoints,
+  rankingPoints,
+  startPoints,
 }: {
   query: string;
   currentPage: number;
   startDate?: string;
   endDate?: string;
   limit?: number;
+  bonusPoints: number;
+  rankingPoints: number;
+  startPoints: number;
 }) {
   const players = await fetchFilteredPlayers(query, currentPage);
   const gameResults = (await fetchFilteredGameResults(
@@ -39,7 +45,15 @@ async function ScoreData({
     limit,
   )) as any;
 
-  return <ScoreTable players={players} gameResults={gameResults} />;
+  return (
+    <ScoreTable
+      players={players}
+      gameResults={gameResults}
+      bonusPoints={bonusPoints}
+      rankingPoints={rankingPoints}
+      startPoints={startPoints}
+    />
+  );
 }
 
 export default async function Page({
@@ -59,17 +73,22 @@ export default async function Page({
   const endDate = searchParams?.endDate;
   const limit = Number(searchParams?.limit) || undefined;
   const title = cookies().get('userName')?.value;
+  const bonusPoints = parseInt(cookies().get('BOUNUS_POINTS')?.value || '5000');
+  const rankingPoints = parseInt(
+    cookies().get('RANKING_POINTS')?.value || '20000',
+  );
+  const startPoints = parseInt(cookies().get('START_POINTS')?.value || '25000');
   const allPlayers = await fetchAllPlayers();
 
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
         <h1 className="text-2xl font-bold">{title} 成績表</h1>
-        <div className="flex items-center gap-2">
-          <CreatePlayer />
-          <RegisterGame players={allPlayers} />
-          <Filter />
-        </div>
+      </div>
+      <div className="flex items-center justify-end gap-2">
+        <CreatePlayer />
+        <RegisterGame players={allPlayers} startPoints={startPoints} />
+        <Filter />
       </div>
       <div className="overflow-x-auto">
         <Suspense
@@ -82,6 +101,9 @@ export default async function Page({
             startDate={startDate}
             endDate={endDate}
             limit={limit}
+            bonusPoints={bonusPoints}
+            rankingPoints={rankingPoints}
+            startPoints={startPoints}
           />
         </Suspense>
       </div>

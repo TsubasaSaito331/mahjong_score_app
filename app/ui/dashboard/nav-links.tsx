@@ -22,6 +22,11 @@ const links = [
     href: '/score-display',
     icon: CalculatorIcon,
   },
+  {
+    name: '設定',
+    href: '/dashboard/configPage',
+    icon: Cog6ToothIcon,
+  },
 ];
 
 export default function NavLinks() {

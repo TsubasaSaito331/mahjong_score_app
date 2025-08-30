@@ -9,6 +9,7 @@ import { RegisterGame, CreatePlayer } from '@/app/ui/dashboard/buttons';
 import GameResultTable from '@/app/ui/game-results/table';
 import GameResultFilter from '@/app/ui/game-results/filter';
 import Pagination from '@/app/ui/game-results/pagination';
+import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
   title: '試合結果',
@@ -30,7 +31,11 @@ export default async function Page({
   const startDate = searchParams?.startDate;
   const endDate = searchParams?.endDate;
   const playerIds = searchParams?.players?.split(',').filter(Boolean);
-
+  const bonusPoints = parseInt(cookies().get('BOUNUS_POINTS')?.value || '5000');
+  const rankingPoints = parseInt(
+    cookies().get('RANKING_POINTS')?.value || '20000',
+  );
+  const startPoints = parseInt(cookies().get('START_POINTS')?.value || '25000');
   const players = await fetchAllPlayers();
   const gameResults = (await fetchFilteredGameResults(
     query,
@@ -63,7 +68,13 @@ export default async function Page({
           (playerIds?.join(',') || '')
         }
       >
-        <GameResultTable gameResults={gameResults} players={players} />
+        <GameResultTable
+          gameResults={gameResults}
+          players={players}
+          bonusPoints={bonusPoints}
+          rankingPoints={rankingPoints}
+          startPoints={startPoints}
+        />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />

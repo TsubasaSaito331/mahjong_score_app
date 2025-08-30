@@ -7,9 +7,15 @@ import { RegisterGame } from '@/app/ui/dashboard/buttons';
 export default function GameResultTable({
   gameResults,
   players,
+  bonusPoints,
+  rankingPoints,
+  startPoints,
 }: {
   gameResults: GameResult[];
   players: Player[];
+  bonusPoints: number;
+  rankingPoints: number;
+  startPoints: number;
 }) {
   const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
   const formatDate = (date: Date) => {
@@ -32,8 +38,12 @@ export default function GameResultTable({
     return players.find((player) => player.id === id)?.name;
   };
 
-  const BONUS_POINTS = 5000;
-  const RANKING_POINTS = [30000 + BONUS_POINTS * 4, 10000, -10000, -30000];
+  const RANKING_POINTS = [
+    rankingPoints * 1.5 + bonusPoints * 4,
+    rankingPoints * 0.5,
+    rankingPoints * -0.5,
+    rankingPoints * -1.5,
+  ];
 
   const calcGamePoint = (gameResult: GameResult, index: number): string => {
     const scores: number[] = [
@@ -51,8 +61,8 @@ export default function GameResultTable({
 
     const calculatedScore =
       (scores[index] -
-        25000 -
-        BONUS_POINTS +
+        startPoints -
+        bonusPoints +
         (rank[index] === 1
           ? RANKING_POINTS[0]
           : rank[index] === 1.5
@@ -106,6 +116,7 @@ export default function GameResultTable({
                         <RegisterGame
                           players={players}
                           gameResult={gameResult}
+                          startPoints={startPoints}
                         />
                         <DeleteGameResult gameResultId={gameResult.id} />
                       </div>
@@ -220,7 +231,11 @@ export default function GameResultTable({
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <RegisterGame players={players} gameResult={gameResult} />
+                      <RegisterGame
+                        players={players}
+                        gameResult={gameResult}
+                        startPoints={startPoints}
+                      />
                       <DeleteGameResult gameResultId={gameResult.id} />
                     </div>
                   </td>

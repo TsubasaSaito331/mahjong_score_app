@@ -7,6 +7,9 @@ export type User = {
   name: string;
   userId: string;
   password: string;
+  bonus_points: number;
+  ranking_points: number;
+  start_points: number;
 };
 
 export type Result = {

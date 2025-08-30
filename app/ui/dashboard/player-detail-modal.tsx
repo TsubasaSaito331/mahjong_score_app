@@ -38,6 +38,9 @@ type PlayerDetailModalProps = {
   onClose: () => void;
   gameResults: GameResult[];
   allPlayers?: Player[];
+  bonusPoints: number;
+  rankingPoints: number;
+  startPoints: number;
 };
 
 export default function PlayerDetailModal({
@@ -46,6 +49,9 @@ export default function PlayerDetailModal({
   onClose,
   gameResults,
   allPlayers = [],
+  bonusPoints,
+  rankingPoints,
+  startPoints,
 }: PlayerDetailModalProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'stats' | 'headToHead'>('stats');
@@ -162,47 +168,62 @@ export default function PlayerDetailModal({
             }
 
             // 順位点を考慮したポイント計算
-            const BONUS_POINTS = 5000;
             const RANKING_POINTS = [
-              30000 + BONUS_POINTS * 4,
-              10000,
-              -10000,
-              -30000,
+              rankingPoints * 1.5 + bonusPoints * 4,
+              rankingPoints * 0.5,
+              rankingPoints * -0.5,
+              rankingPoints * -1.5,
             ];
 
             // プレイヤーのポイント計算
             let playerPoint = 0;
             if (playerRank === 1) {
               playerPoint =
-                (playerScore + RANKING_POINTS[0] - BONUS_POINTS - 25000) / 1000;
+                (playerScore + RANKING_POINTS[0] - bonusPoints - startPoints) /
+                1000;
             } else if (playerRank === 2) {
               playerPoint =
-                (playerScore + RANKING_POINTS[1] - BONUS_POINTS - 25000) / 1000;
+                (playerScore + RANKING_POINTS[1] - bonusPoints - startPoints) /
+                1000;
             } else if (playerRank === 3) {
               playerPoint =
-                (playerScore + RANKING_POINTS[2] - BONUS_POINTS - 25000) / 1000;
+                (playerScore + RANKING_POINTS[2] - bonusPoints - startPoints) /
+                1000;
             } else {
               playerPoint =
-                (playerScore + RANKING_POINTS[3] - BONUS_POINTS - 25000) / 1000;
+                (playerScore + RANKING_POINTS[3] - bonusPoints - startPoints) /
+                1000;
             }
 
             // 対戦相手のポイント計算
             let opponentPoint = 0;
             if (opponentRank === 1) {
               opponentPoint =
-                (opponentScore + RANKING_POINTS[0] - BONUS_POINTS - 25000) /
+                (opponentScore +
+                  RANKING_POINTS[0] -
+                  bonusPoints -
+                  startPoints) /
                 1000;
             } else if (opponentRank === 2) {
               opponentPoint =
-                (opponentScore + RANKING_POINTS[1] - BONUS_POINTS - 25000) /
+                (opponentScore +
+                  RANKING_POINTS[1] -
+                  bonusPoints -
+                  startPoints) /
                 1000;
             } else if (opponentRank === 3) {
               opponentPoint =
-                (opponentScore + RANKING_POINTS[2] - BONUS_POINTS - 25000) /
+                (opponentScore +
+                  RANKING_POINTS[2] -
+                  bonusPoints -
+                  startPoints) /
                 1000;
             } else {
               opponentPoint =
-                (opponentScore + RANKING_POINTS[3] - BONUS_POINTS - 25000) /
+                (opponentScore +
+                  RANKING_POINTS[3] -
+                  bonusPoints -
+                  startPoints) /
                 1000;
             }
 
@@ -342,17 +363,25 @@ export default function PlayerDetailModal({
       const playerRank = sortedScores.indexOf(rawScore) + 1;
 
       // 同点の場合の処理
-      const BONUS_POINTS = 5000;
-      const RANKING_POINTS = [30000 + BONUS_POINTS * 4, 10000, -10000, -30000];
+      const RANKING_POINTS = [
+        rankingPoints * 1.5 + bonusPoints * 4,
+        rankingPoints * 0.5,
+        rankingPoints * -0.5,
+        rankingPoints * -1.5,
+      ];
 
       if (playerRank === 1) {
-        score = (rawScore + RANKING_POINTS[0] - BONUS_POINTS - 25000) / 1000;
+        score =
+          (rawScore + RANKING_POINTS[0] - bonusPoints - startPoints) / 1000;
       } else if (playerRank === 2) {
-        score = (rawScore + RANKING_POINTS[1] - BONUS_POINTS - 25000) / 1000;
+        score =
+          (rawScore + RANKING_POINTS[1] - bonusPoints - startPoints) / 1000;
       } else if (playerRank === 3) {
-        score = (rawScore + RANKING_POINTS[2] - BONUS_POINTS - 25000) / 1000;
+        score =
+          (rawScore + RANKING_POINTS[2] - bonusPoints - startPoints) / 1000;
       } else {
-        score = (rawScore + RANKING_POINTS[3] - BONUS_POINTS - 25000) / 1000;
+        score =
+          (rawScore + RANKING_POINTS[3] - bonusPoints - startPoints) / 1000;
       }
 
       cumulativeScore += score;

@@ -9,9 +9,15 @@ import PlayerDetailModal from './player-detail-modal';
 export default function Table({
   players,
   gameResults,
+  bonusPoints,
+  rankingPoints,
+  startPoints,
 }: {
   players: Player[];
   gameResults: GameResult[];
+  bonusPoints: number;
+  rankingPoints: number;
+  startPoints: number;
 }) {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortedPlayers, setSortedPlayers] = useState<Player[]>(players);
@@ -55,30 +61,41 @@ export default function Table({
           else if (rank === 3) thirdnum++;
           else fourthnum++;
 
-          const BONUS_POINTS = 5000;
           const RANKING_POINTS = [
-            30000 + BONUS_POINTS * 4,
-            10000,
-            -10000,
-            -30000,
+            rankingPoints * 1.5 + bonusPoints * 4,
+            rankingPoints * 0.5,
+            rankingPoints * -0.5,
+            rankingPoints * -1.5,
           ];
 
           let gameTotalScore = 0;
           if (rank === 1) {
             gameTotalScore =
-              (playerInGame.score + RANKING_POINTS[0] - BONUS_POINTS - 25000) /
+              (playerInGame.score +
+                RANKING_POINTS[0] -
+                bonusPoints -
+                startPoints) /
               1000;
           } else if (rank === 2) {
             gameTotalScore =
-              (playerInGame.score + RANKING_POINTS[1] - BONUS_POINTS - 25000) /
+              (playerInGame.score +
+                RANKING_POINTS[1] -
+                bonusPoints -
+                startPoints) /
               1000;
           } else if (rank === 3) {
             gameTotalScore =
-              (playerInGame.score + RANKING_POINTS[2] - BONUS_POINTS - 25000) /
+              (playerInGame.score +
+                RANKING_POINTS[2] -
+                bonusPoints -
+                startPoints) /
               1000;
           } else {
             gameTotalScore =
-              (playerInGame.score + RANKING_POINTS[3] - BONUS_POINTS - 25000) /
+              (playerInGame.score +
+                RANKING_POINTS[3] -
+                bonusPoints -
+                startPoints) /
               1000;
           }
 
@@ -651,6 +668,9 @@ export default function Table({
               onClose={closeDetailModal}
               gameResults={gameResults}
               allPlayers={players}
+              bonusPoints={bonusPoints}
+              rankingPoints={rankingPoints}
+              startPoints={startPoints}
             />
           )}
         </div>

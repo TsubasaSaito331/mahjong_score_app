@@ -36,6 +36,16 @@ export const { auth, signIn, signOut } = NextAuth({
 
           cookies().set('user', user.id, { expires: expiryDate });
           cookies().set('userName', user.name, { expires: expiryDate });
+          cookies().set('BOUNUS_POINTS', user.bonus_points.toString(), {
+            expires: expiryDate,
+          });
+          cookies().set('RANKING_POINTS', user.ranking_points.toString(), {
+            expires: expiryDate,
+          });
+          cookies().set('START_POINTS', user.start_points.toString(), {
+            expires: expiryDate,
+          });
+
           const passwordsMatch = await bcrypt.compare(password, user.password);
 
           console.log(user);

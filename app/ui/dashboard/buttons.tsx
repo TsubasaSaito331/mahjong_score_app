@@ -439,9 +439,11 @@ export function DeletePlayer({ id, name }: { id: any; name: any }) {
 export function RegisterGame({
   players,
   gameResult,
+  startPoints,
 }: {
   players: Player[];
   gameResult?: GameResult;
+  startPoints: number;
 }) {
   const isEditMode = !!gameResult;
 
@@ -646,13 +648,13 @@ export function RegisterGame({
           ))}
           <div
             className={`mb-4 rounded-md p-2 text-center font-bold ${
-              totalScore !== 100000
+              totalScore !== startPoints * 4
                 ? 'bg-red-100 text-red-700'
                 : 'bg-green-100 text-green-700'
             }`}
             role="status"
           >
-            合計点: {totalScore} / 残り: {100000 - totalScore}
+            合計点: {totalScore} / 残り: {startPoints * 4 - totalScore}
           </div>
           {errorMessage && (
             <div
@@ -673,11 +675,11 @@ export function RegisterGame({
             <button
               type="submit"
               className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm ${
-                totalScore === 100000 && !isLoading
+                totalScore === startPoints * 4 && !isLoading
                   ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
                   : 'cursor-not-allowed bg-gray-400'
               }`}
-              disabled={totalScore !== 100000 || isLoading}
+              disabled={totalScore !== startPoints * 4 || isLoading}
             >
               {isLoading
                 ? isEditMode

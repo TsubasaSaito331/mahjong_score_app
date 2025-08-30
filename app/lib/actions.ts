@@ -7,6 +7,7 @@ import { cookies } from 'next/headers';
 import { getUser } from './data';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { revalidatePath } from 'next/cache';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -31,31 +32,76 @@ export async function createAccount(
   prevState: string | undefined,
   formData: FormData,
 ) {
+  const userId = formData.get('userId') as string;
+  const name = formData.get('name') as string;
+  const password = formData.get('password') as string;
+  const bonus_points = Number(formData.get('bonus_points'));
+  const ranking_points = Number(formData.get('ranking_points'));
+  const start_points = Number(formData.get('start_points'));
+
   try {
-    const userId = formData.get('userId') as string;
-    const credentials = await getUser(formData.get('userId') as string);
+    const credentials = await getUser(userId);
     if (!!credentials) {
       return 'そのユーザIDは既に登録されています';
     }
 
-    const name = formData.get('name') as string;
-    const password = formData.get('password') as string;
     const hashedPassword = await bcrypt.hash(password, 10);
     const newId = uuidv4();
 
     await sql`
-      INSERT INTO users (Id, Name, userId, Password)
-      VALUES (${newId}, ${name}, ${userId}, ${hashedPassword})
+      INSERT INTO users (Id, Name, userId, Password, bonus_points, ranking_points, start_points)
+      VALUES (${newId}, ${name}, ${userId}, ${hashedPassword}, ${bonus_points}, ${ranking_points}, ${start_points})
     `;
-    console.log('created account success!:', {
-      name: name,
-      userId: userId,
-      password: password,
-    });
+  } catch (error) {
+    console.error('Database Error:', error);
+    return 'アカウントの作成に失敗しました。';
+  }
+
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return 'アカウントは作成されましたが、自動ログインに失敗しました。';
+    }
+    throw error;
+  }
+}
+
+export async function updateSettings(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  const name = formData.get('name') as string;
+  const ranking_points = Number(formData.get('ranking_points'));
+  const start_points = Number(formData.get('start_points'));
+  const bonus_points = Number(formData.get('bonus_points'));
+
+  try {
+    const userId = cookies().get('user')?.value;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
+    await sql`
+      UPDATE users
+      SET
+        Name = ${name},
+        ranking_points = ${ranking_points},
+        start_points = ${start_points},
+        bonus_points = ${bonus_points}
+      WHERE Id = ${userId}
+    `;
+
+    cookies().set('userName', name);
+    cookies().set('RANKING_POINTS', String(ranking_points));
+    cookies().set('START_POINTS', String(start_points));
+    cookies().set('BOUNUS_POINTS', String(bonus_points));
+
+    revalidatePath('/dashboard/configPage');
     return 'success';
   } catch (error) {
     console.error('Database Error:', error);
-    return 'failed create account.';
+    return '設定の更新に失敗しました。';
   }
 }
 
@@ -282,29 +328,39 @@ export async function deletePlayer(id: string) {
   }
 }
 
-const BONUS_POINTS = 5000;
-const RANKING_POINTS = [30000 + BONUS_POINTS * 4, 10000, -10000, -30000];
-
 function calcGamePoints(players: any[]) {
+  const bonusPoints = parseInt(cookies().get('BOUNUS_POINTS')?.value || '5000');
+  const rankingPoints = parseInt(
+    cookies().get('RANKING_POINTS')?.value || '20000',
+  );
+  const startPoints = parseInt(cookies().get('START_POINTS')?.value || '25000');
+  const RANKING_POINTS = [
+    rankingPoints * 1.5 + bonusPoints * 4,
+    rankingPoints * 0.5,
+    rankingPoints * -0.5,
+    rankingPoints * -1.5,
+  ];
+
   players.sort((a, b) => b.score - a.score);
   let rank = 1;
   players[0].rank = rank;
   players[0].point =
-    (players[0].score * 100 + RANKING_POINTS[0] - BONUS_POINTS - 25000) / 1000;
+    (players[0].score * 100 + RANKING_POINTS[0] - bonusPoints - startPoints) /
+    1000;
   for (let i = 1; i < players.length; i++) {
     if (players[i].score === players[i - 1].score) {
       players[i].rank = rank;
       players[i].point =
         (players[i].score * 100 +
           (RANKING_POINTS[rank - 1] + RANKING_POINTS[rank]) / 2 -
-          BONUS_POINTS -
-          25000) /
+          bonusPoints -
+          startPoints) /
         1000;
       players[i - 1].point =
         (players[i - 1].score * 100 +
           (RANKING_POINTS[rank - 1] + RANKING_POINTS[rank]) / 2 -
-          BONUS_POINTS -
-          25000) /
+          bonusPoints -
+          startPoints) /
         1000;
       rank++;
     } else {
@@ -313,8 +369,8 @@ function calcGamePoints(players: any[]) {
       players[i].point =
         (players[i].score * 100 +
           RANKING_POINTS[rank - 1] -
-          BONUS_POINTS -
-          25000) /
+          bonusPoints -
+          startPoints) /
         1000;
     }
   }
