@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DeletePlayer, UpdatePlayer } from './buttons';
 import { LuArrowDownUp } from 'react-icons/lu';
 import { Player, GameResult } from '@/app/lib/definitions';
@@ -19,8 +20,9 @@ export default function Table({
   rankingPoints: number;
   startPoints: number;
 }) {
+  const searchParams = useSearchParams();
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [sortedPlayers, setSortedPlayers] = useState<Player[]>(players);
+  const [sortedPlayers, setSortedPlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -119,7 +121,13 @@ export default function Table({
       };
     });
 
-    const rankedPlayers = calculatedPlayers
+    const minGames = Number(searchParams.get('minGames')) || 0;
+    const filteredByGames =
+      minGames > 0
+        ? calculatedPlayers.filter((p) => p.games >= minGames)
+        : calculatedPlayers;
+
+    const rankedPlayers = filteredByGames
       .sort((a, b) => b.totalscore - a.totalscore)
       .map((p, index) => ({
         ...p,
@@ -127,7 +135,7 @@ export default function Table({
       }));
 
     setSortedPlayers(rankedPlayers);
-  }, [players, gameResults]);
+  }, [players, gameResults, searchParams]);
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');

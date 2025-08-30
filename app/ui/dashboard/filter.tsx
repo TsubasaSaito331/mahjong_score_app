@@ -17,6 +17,7 @@ export default function Filter() {
   );
   const [endDate, setEndDate] = useState(searchParams.get('endDate') || '');
   const [customGames, setCustomGames] = useState('');
+  const [customMinGames, setCustomMinGames] = useState('');
 
   useEffect(() => {
     setStartDate(searchParams.get('startDate') || '');
@@ -32,7 +33,6 @@ export default function Filter() {
     params.delete('limit');
     replace(`${pathname}?${params.toString()}`);
     setShowMonthPicker(false);
-    setIsOpen(false);
   };
 
   const generateMonths = () => {
@@ -56,6 +56,7 @@ export default function Filter() {
   ) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('limit');
+    params.delete('minGames');
     const today = new Date();
 
     if (type === 'this_month') {
@@ -91,6 +92,21 @@ export default function Filter() {
     params.set('limit', String(count));
     params.delete('startDate');
     params.delete('endDate');
+    params.delete('minGames');
+    replace(`${pathname}?${params.toString()}`);
+    setIsOpen(false);
+  };
+
+  const handleMinGamesFilter = (count: number | string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (count) {
+      params.set('minGames', String(count));
+    } else {
+      params.delete('minGames');
+    }
+    params.delete('limit');
+    params.delete('startDate');
+    params.delete('endDate');
     replace(`${pathname}?${params.toString()}`);
     setIsOpen(false);
   };
@@ -112,6 +128,7 @@ export default function Filter() {
     params.delete('startDate');
     params.delete('endDate');
     params.delete('limit');
+    params.delete('minGames');
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -127,7 +144,7 @@ export default function Filter() {
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-4">
           <div>
-            <p className="text-sm font-medium text-gray-700">期間で絞り込み</p>
+            <p className="text-sm font-medium text-gray-700">期間</p>
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={() => handleFilter('this_month')}
@@ -201,9 +218,7 @@ export default function Filter() {
           </div>
 
           <div className="mt-6 border-t pt-4">
-            <p className="text-sm font-medium text-gray-700">
-              試合数で絞り込み
-            </p>
+            <p className="text-sm font-medium text-gray-700">直近の試合数</p>
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={() => handleGameCountFilter(50)}
@@ -234,6 +249,51 @@ export default function Filter() {
               />
               <button
                 onClick={() => handleGameCountFilter(Number(customGames))}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                適用
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 border-t pt-4">
+            <p className="text-sm font-medium text-gray-700">最低試合数</p>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                onClick={() => handleMinGamesFilter(5)}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                5戦
+              </button>
+              <button
+                onClick={() => handleMinGamesFilter(10)}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                10戦
+              </button>
+              <button
+                onClick={() => handleMinGamesFilter(20)}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                20戦
+              </button>
+              <button
+                onClick={() => handleMinGamesFilter(30)}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                30戦
+              </button>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                type="number"
+                value={customMinGames}
+                onChange={(e) => setCustomMinGames(e.target.value)}
+                placeholder="指定"
+                className="block w-24 rounded-md border-gray-300 shadow-sm sm:text-sm"
+              />
+              <button
+                onClick={() => handleMinGamesFilter(customMinGames)}
                 className="rounded-md border p-2 text-sm hover:bg-gray-100"
               >
                 適用
