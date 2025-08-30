@@ -100,7 +100,7 @@ export default function EditConfigForm({
     <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-2 md:p-6">
         <div className="mb-4">
-          <label htmlFor="name" className="mb-2 block text-sm font-medium">
+          <label htmlFor="name" className="text-md mb-2 block font-medium">
             成績表名
           </label>
           <div className="relative">
@@ -115,16 +115,16 @@ export default function EditConfigForm({
           </div>
         </div>
 
-        <span className="text-sm font-medium">ルール設定</span>
+        <span className="text-md font-medium">ルール設定</span>
         <div className="mt-4">
-          <div className="mb-4 mt-5 flex rounded-lg bg-gray-200 p-1">
+          <div className="flex rounded-lg bg-gray-200 p-1">
             {(Object.keys(templates) as (keyof typeof templates)[]).map(
               (name) => (
                 <button
                   key={name}
                   type="button"
                   onClick={() => handleTemplateClick(name)}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
                     activeTemplate === name
                       ? 'bg-white text-blue-600 shadow-sm'
                       : 'text-gray-600 hover:text-gray-800'
@@ -140,7 +140,7 @@ export default function EditConfigForm({
               htmlFor="start_points"
               className="mb-2 block text-sm font-medium"
             >
-              開始点
+              持ち点
             </label>
             <div className="relative">
               <input

@@ -190,7 +190,7 @@ export default function CreateAccountForm() {
                   className="mb-3 mt-5 block text-xs font-medium text-gray-900"
                   htmlFor="start_points"
                 >
-                  開始点
+                  持ち点
                 </label>
                 <div className="relative">
                   <input
@@ -198,7 +198,7 @@ export default function CreateAccountForm() {
                     id="start_points"
                     type="number"
                     name="start_points"
-                    placeholder="開始点を入力"
+                    placeholder="持ち点を入力"
                     value={startPoints}
                     onChange={(e) => setStartPoints(Number(e.target.value))}
                     required
