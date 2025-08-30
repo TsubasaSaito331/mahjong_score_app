@@ -142,19 +142,19 @@ export default function Filter() {
       </button>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <div className="p-4">
+        <div className="p-4 text-sm">
           <div>
-            <p className="text-sm font-medium text-gray-700">期間</p>
+            <p className="font-medium text-gray-700">期間</p>
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={() => handleFilter('this_month')}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1 hover:bg-gray-100"
               >
                 今月
               </button>
               <button
                 onClick={() => handleFilter('last_month')}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1 hover:bg-gray-100"
               >
                 先月
               </button>
@@ -162,7 +162,7 @@ export default function Filter() {
                 <button
                   type="button"
                   onClick={() => setShowMonthPicker(!showMonthPicker)}
-                  className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                  className="rounded-md border px-2 py-1 hover:bg-gray-100"
                 >
                   月指定
                 </button>
@@ -173,7 +173,7 @@ export default function Filter() {
                         <li key={label}>
                           <button
                             onClick={() => handleMonthSelect(year, month)}
-                            className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                            className="block w-full px-4 py-1 text-left text-gray-700 hover:bg-gray-100"
                           >
                             {label}
                           </button>
@@ -186,10 +186,7 @@ export default function Filter() {
             </div>
             <div className="mt-2">
               <div>
-                <label
-                  htmlFor="startDate"
-                  className="block text-sm font-medium"
-                >
+                <label htmlFor="startDate" className="block text-xs">
                   開始日
                 </label>
                 <input
@@ -198,11 +195,11 @@ export default function Filter() {
                   id="startDate"
                   value={startDate}
                   onChange={handleStartDateChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
+                  className="mt-1 block w-full rounded-md border-gray-300 py-1 shadow-sm sm:text-sm"
                 />
               </div>
               <div className="mt-2">
-                <label htmlFor="endDate" className="block text-sm font-medium">
+                <label htmlFor="endDate" className="block text-xs">
                   終了日
                 </label>
                 <input
@@ -211,30 +208,30 @@ export default function Filter() {
                   id="endDate"
                   value={endDate}
                   onChange={handleEndDateChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
+                  className="mt-1 block w-full rounded-md border-gray-300 py-1 shadow-sm sm:text-sm"
                 />
               </div>
             </div>
           </div>
 
-          <div className="mt-6 border-t pt-4">
-            <p className="text-sm font-medium text-gray-700">直近の試合数</p>
+          <div className="mt-4 border-t pt-4">
+            <p className="font-medium text-gray-700">直近の試合数</p>
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={() => handleGameCountFilter(50)}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 50戦
               </button>
               <button
                 onClick={() => handleGameCountFilter(100)}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 100戦
               </button>
               <button
                 onClick={() => handleGameCountFilter(200)}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 200戦
               </button>
@@ -245,41 +242,41 @@ export default function Filter() {
                 value={customGames}
                 onChange={(e) => setCustomGames(e.target.value)}
                 placeholder="指定"
-                className="block w-24 rounded-md border-gray-300 shadow-sm sm:text-sm"
+                className="block w-24 rounded-md border-gray-300 py-1 shadow-sm sm:text-sm"
               />
               <button
                 onClick={() => handleGameCountFilter(Number(customGames))}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 適用
               </button>
             </div>
           </div>
 
-          <div className="mt-6 border-t pt-4">
-            <p className="text-sm font-medium text-gray-700">最低試合数</p>
+          <div className="mt-4 border-t pt-4">
+            <p className="font-medium text-gray-700">最低試合数</p>
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={() => handleMinGamesFilter(5)}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 5戦
               </button>
               <button
                 onClick={() => handleMinGamesFilter(10)}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 10戦
               </button>
               <button
                 onClick={() => handleMinGamesFilter(20)}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 20戦
               </button>
               <button
                 onClick={() => handleMinGamesFilter(30)}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 30戦
               </button>
@@ -290,11 +287,11 @@ export default function Filter() {
                 value={customMinGames}
                 onChange={(e) => setCustomMinGames(e.target.value)}
                 placeholder="指定"
-                className="block w-24 rounded-md border-gray-300 shadow-sm sm:text-sm"
+                className="block w-24 rounded-md border-gray-300 py-1 shadow-sm sm:text-sm"
               />
               <button
                 onClick={() => handleMinGamesFilter(customMinGames)}
-                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                className="rounded-md border px-2 py-1  hover:bg-gray-100"
               >
                 適用
               </button>
@@ -305,14 +302,14 @@ export default function Filter() {
             <button
               type="button"
               onClick={clearFilter}
-              className="rounded-md border bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              className="rounded-md border bg-gray-100 px-4 py-1 font-medium text-gray-700 hover:bg-gray-200"
             >
               クリア
             </button>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-md border bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-md border bg-white px-4 py-1 font-medium text-gray-700 hover:bg-gray-50"
             >
               閉じる
             </button>
