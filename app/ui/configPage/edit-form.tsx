@@ -33,7 +33,6 @@ export default function EditConfigForm({
   const [bonusPoints, setBonusPoints] = useState(Number(initialBonusPoints));
   const [startPoints, setStartPoints] = useState(Number(initialStartPoints));
   const [activeTemplate, setActiveTemplate] = useState('');
-  const [showDetails, setShowDetails] = useState(false);
 
   const [rankPointDisplay, setRankPointDisplay] = useState({
     first: 0,

@@ -18,10 +18,46 @@ export default function Filter() {
   const [endDate, setEndDate] = useState(searchParams.get('endDate') || '');
   const [customGames, setCustomGames] = useState('');
   const [customMinGames, setCustomMinGames] = useState('');
+  const [activePeriod, setActivePeriod] = useState('');
 
   useEffect(() => {
     setStartDate(searchParams.get('startDate') || '');
     setEndDate(searchParams.get('endDate') || '');
+
+    const sDate = searchParams.get('startDate');
+    const eDate = searchParams.get('endDate');
+    let period = '';
+
+    if (sDate && eDate) {
+      const today = new Date();
+      const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1)
+        .toISOString()
+        .split('T')[0];
+      const thisMonthEnd = new Date(
+        today.getFullYear(),
+        today.getMonth() + 1,
+        0,
+      )
+        .toISOString()
+        .split('T')[0];
+      const lastMonthStart = new Date(
+        today.getFullYear(),
+        today.getMonth() - 1,
+        1,
+      )
+        .toISOString()
+        .split('T')[0];
+      const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0)
+        .toISOString()
+        .split('T')[0];
+
+      if (sDate === thisMonthStart && eDate === thisMonthEnd) {
+        period = 'this_month';
+      } else if (sDate === lastMonthStart && eDate === lastMonthEnd) {
+        period = 'last_month';
+      }
+    }
+    setActivePeriod(period);
   }, [searchParams]);
 
   const handleMonthSelect = (year: number, month: number) => {
@@ -56,7 +92,6 @@ export default function Filter() {
   ) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('limit');
-    params.delete('minGames');
     const today = new Date();
 
     if (type === 'this_month') {
@@ -92,7 +127,6 @@ export default function Filter() {
     params.set('limit', String(count));
     params.delete('startDate');
     params.delete('endDate');
-    params.delete('minGames');
     replace(`${pathname}?${params.toString()}`);
     setIsOpen(false);
   };
@@ -104,9 +138,6 @@ export default function Filter() {
     } else {
       params.delete('minGames');
     }
-    params.delete('limit');
-    params.delete('startDate');
-    params.delete('endDate');
     replace(`${pathname}?${params.toString()}`);
     setIsOpen(false);
   };
@@ -130,7 +161,12 @@ export default function Filter() {
     params.delete('limit');
     params.delete('minGames');
     replace(`${pathname}?${params.toString()}`);
+    setIsOpen(false);
   };
+
+  const limit = searchParams.get('limit');
+  const minGames = searchParams.get('minGames');
+  const activeClass = 'bg-blue-100 text-blue-700 border-blue-500';
 
   return (
     <div>
@@ -148,13 +184,17 @@ export default function Filter() {
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={() => handleFilter('this_month')}
-                className="rounded-md border px-2 py-1 hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1 hover:bg-gray-100 ${
+                  activePeriod === 'this_month' ? activeClass : ''
+                }`}
               >
                 今月
               </button>
               <button
                 onClick={() => handleFilter('last_month')}
-                className="rounded-md border px-2 py-1 hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1 hover:bg-gray-100 ${
+                  activePeriod === 'last_month' ? activeClass : ''
+                }`}
               >
                 先月
               </button>
@@ -219,19 +259,25 @@ export default function Filter() {
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={() => handleGameCountFilter(50)}
-                className="rounded-md border px-2 py-1  hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1  hover:bg-gray-100 ${
+                  limit === '50' ? activeClass : ''
+                }`}
               >
                 50戦
               </button>
               <button
                 onClick={() => handleGameCountFilter(100)}
-                className="rounded-md border px-2 py-1  hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1  hover:bg-gray-100 ${
+                  limit === '100' ? activeClass : ''
+                }`}
               >
                 100戦
               </button>
               <button
                 onClick={() => handleGameCountFilter(200)}
-                className="rounded-md border px-2 py-1  hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1  hover:bg-gray-100 ${
+                  limit === '200' ? activeClass : ''
+                }`}
               >
                 200戦
               </button>
@@ -258,25 +304,33 @@ export default function Filter() {
             <div className="mt-2 flex items-center gap-2">
               <button
                 onClick={() => handleMinGamesFilter(5)}
-                className="rounded-md border px-2 py-1  hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1  hover:bg-gray-100 ${
+                  minGames === '5' ? activeClass : ''
+                }`}
               >
                 5戦
               </button>
               <button
                 onClick={() => handleMinGamesFilter(10)}
-                className="rounded-md border px-2 py-1  hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1  hover:bg-gray-100 ${
+                  minGames === '10' ? activeClass : ''
+                }`}
               >
                 10戦
               </button>
               <button
                 onClick={() => handleMinGamesFilter(20)}
-                className="rounded-md border px-2 py-1  hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1  hover:bg-gray-100 ${
+                  minGames === '20' ? activeClass : ''
+                }`}
               >
                 20戦
               </button>
               <button
                 onClick={() => handleMinGamesFilter(30)}
-                className="rounded-md border px-2 py-1  hover:bg-gray-100"
+                className={`rounded-md border px-2 py-1  hover:bg-gray-100 ${
+                  minGames === '30' ? activeClass : ''
+                }`}
               >
                 30戦
               </button>
