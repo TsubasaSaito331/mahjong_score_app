@@ -5,6 +5,7 @@ import { fetchFilteredGameResults, fetchFilteredPlayers } from '@/app/lib/data';
 import { Metadata } from 'next';
 import { CreatePlayer, RegisterGame } from '@/app/ui/dashboard/buttons';
 import { cookies } from 'next/headers';
+import Filter from '@/app/ui/dashboard/filter';
 
 export const metadata: Metadata = {
   title: '成績表',
@@ -16,15 +17,21 @@ export default async function Page({
   searchParams?: {
     query?: string;
     page?: string;
+    startDate?: string;
+    endDate?: string;
   };
 }) {
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
+  const startDate = searchParams?.startDate;
+  const endDate = searchParams?.endDate;
   var title = cookies().get('userName')?.value;
   var players = await fetchFilteredPlayers(query, currentPage);
   const gameResults = (await fetchFilteredGameResults(
     query,
     currentPage,
+    startDate,
+    endDate,
   )) as any;
 
   return (
@@ -34,10 +41,11 @@ export default async function Page({
         <div className="flex items-center gap-2">
           <CreatePlayer />
           <RegisterGame players={players} />
+          <Filter />
         </div>
       </div>
       <div className="overflow-x-auto">
-        <Suspense key={query + currentPage}>
+        <Suspense key={query + currentPage + startDate + endDate}>
           <ScoreTable players={players} gameResults={gameResults} />
         </Suspense>
       </div>

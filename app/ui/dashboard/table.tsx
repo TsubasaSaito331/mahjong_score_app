@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DeletePlayer, UpdatePlayer } from './buttons';
 import { LuArrowDownUp } from 'react-icons/lu';
 import { Player, GameResult } from '@/app/lib/definitions';
@@ -17,6 +17,100 @@ export default function Table({
   const [sortedPlayers, setSortedPlayers] = useState<Player[]>(players);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!players || !gameResults) return;
+
+    const calculatedPlayers = players.map((player) => {
+      let totalscore = 0;
+      let rawscore = 0;
+      let games = 0;
+      let firstnum = 0;
+      let secondnum = 0;
+      let thirdnum = 0;
+      let fourthnum = 0;
+      let maxscore = -100000;
+
+      gameResults.forEach((game) => {
+        const gamePlayers = [
+          { id: game.eastplayer, score: game.eastplayerscore },
+          { id: game.southplayer, score: game.southplayerscore },
+          { id: game.westplayer, score: game.westplayerscore },
+          { id: game.northplayer, score: game.northplayerscore },
+        ];
+
+        const playerInGame = gamePlayers.find((p) => p.id === player.id);
+
+        if (playerInGame) {
+          games++;
+          rawscore += playerInGame.score;
+
+          const sortedScores = [...gamePlayers].sort(
+            (a, b) => b.score - a.score,
+          );
+          const rank = sortedScores.findIndex((p) => p.id === player.id) + 1;
+
+          if (rank === 1) firstnum++;
+          else if (rank === 2) secondnum++;
+          else if (rank === 3) thirdnum++;
+          else fourthnum++;
+
+          const BONUS_POINTS = 5000;
+          const RANKING_POINTS = [
+            30000 + BONUS_POINTS * 4,
+            10000,
+            -10000,
+            -30000,
+          ];
+
+          let gameTotalScore = 0;
+          if (rank === 1) {
+            gameTotalScore =
+              (playerInGame.score + RANKING_POINTS[0] - BONUS_POINTS - 25000) /
+              1000;
+          } else if (rank === 2) {
+            gameTotalScore =
+              (playerInGame.score + RANKING_POINTS[1] - BONUS_POINTS - 25000) /
+              1000;
+          } else if (rank === 3) {
+            gameTotalScore =
+              (playerInGame.score + RANKING_POINTS[2] - BONUS_POINTS - 25000) /
+              1000;
+          } else {
+            gameTotalScore =
+              (playerInGame.score + RANKING_POINTS[3] - BONUS_POINTS - 25000) /
+              1000;
+          }
+
+          totalscore += gameTotalScore;
+          if (gameTotalScore > maxscore) {
+            maxscore = gameTotalScore;
+          }
+        }
+      });
+
+      return {
+        ...player,
+        totalscore,
+        rawscore,
+        games,
+        firstnum,
+        secondnum,
+        thirdnum,
+        fourthnum,
+        maxscore,
+      };
+    });
+
+    const rankedPlayers = calculatedPlayers
+      .sort((a, b) => b.totalscore - a.totalscore)
+      .map((p, index) => ({
+        ...p,
+        rank: index + 1,
+      }));
+
+    setSortedPlayers(rankedPlayers);
+  }, [players, gameResults]);
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
