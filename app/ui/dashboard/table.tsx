@@ -22,7 +22,7 @@ export default function Table({
     if (!players || !gameResults) return;
 
     const calculatedPlayers = players.map((player) => {
-      let totalscore = 0;
+      let totalscore = 0 + player.deposition;
       let rawscore = 0;
       let games = 0;
       let firstnum = 0;

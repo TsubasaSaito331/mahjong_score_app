@@ -16,6 +16,7 @@ export default function Filter() {
     searchParams.get('startDate') || '',
   );
   const [endDate, setEndDate] = useState(searchParams.get('endDate') || '');
+  const [customGames, setCustomGames] = useState('');
 
   useEffect(() => {
     setStartDate(searchParams.get('startDate') || '');
@@ -28,6 +29,7 @@ export default function Filter() {
     const end = new Date(year, month + 1, 0);
     params.set('startDate', start.toISOString().split('T')[0]);
     params.set('endDate', end.toISOString().split('T')[0]);
+    params.delete('limit');
     replace(`${pathname}?${params.toString()}`);
     setShowMonthPicker(false);
     setIsOpen(false);
@@ -53,6 +55,7 @@ export default function Filter() {
     eDate?: string,
   ) => {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete('limit');
     const today = new Date();
 
     if (type === 'this_month') {
@@ -79,6 +82,17 @@ export default function Filter() {
     }
 
     replace(`${pathname}?${params.toString()}`);
+    setIsOpen(false);
+  };
+
+  const handleGameCountFilter = (count: number | string) => {
+    if (!count) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('limit', String(count));
+    params.delete('startDate');
+    params.delete('endDate');
+    replace(`${pathname}?${params.toString()}`);
+    setIsOpen(false);
   };
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +111,7 @@ export default function Filter() {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('startDate');
     params.delete('endDate');
+    params.delete('limit');
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -111,74 +126,122 @@ export default function Filter() {
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-4">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleFilter('this_month')}
-              className="rounded-md border p-2 text-sm hover:bg-gray-100"
-            >
-              今月
-            </button>
-            <button
-              onClick={() => handleFilter('last_month')}
-              className="rounded-md border p-2 text-sm hover:bg-gray-100"
-            >
-              先月
-            </button>
-            <div className="relative">
+          <div>
+            <p className="text-sm font-medium text-gray-700">期間で絞り込み</p>
+            <div className="mt-2 flex items-center gap-2">
               <button
-                type="button"
-                onClick={() => setShowMonthPicker(!showMonthPicker)}
+                onClick={() => handleFilter('this_month')}
                 className="rounded-md border p-2 text-sm hover:bg-gray-100"
               >
-                月指定
+                今月
               </button>
-              {showMonthPicker && (
-                <div className="absolute left-0 top-full z-20 mt-1 max-h-60 w-48 overflow-auto rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-                  <ul className="py-1">
-                    {generateMonths().map(({ year, month, label }) => (
-                      <li key={label}>
-                        <button
-                          onClick={() => handleMonthSelect(year, month)}
-                          className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          {label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="mt-4">
-            <div>
-              <label htmlFor="startDate" className="block text-sm font-medium">
-                開始日
-              </label>
-              <input
-                type="date"
-                name="startDate"
-                id="startDate"
-                value={startDate}
-                onChange={handleStartDateChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
-              />
+              <button
+                onClick={() => handleFilter('last_month')}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                先月
+              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowMonthPicker(!showMonthPicker)}
+                  className="rounded-md border p-2 text-sm hover:bg-gray-100"
+                >
+                  月指定
+                </button>
+                {showMonthPicker && (
+                  <div className="absolute left-0 top-full z-20 mt-1 max-h-60 w-48 overflow-auto rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                    <ul className="py-1">
+                      {generateMonths().map(({ year, month, label }) => (
+                        <li key={label}>
+                          <button
+                            onClick={() => handleMonthSelect(year, month)}
+                            className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            {label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-2">
-              <label htmlFor="endDate" className="block text-sm font-medium">
-                終了日
-              </label>
-              <input
-                type="date"
-                name="endDate"
-                id="endDate"
-                value={endDate}
-                onChange={handleEndDateChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
-              />
+              <div>
+                <label
+                  htmlFor="startDate"
+                  className="block text-sm font-medium"
+                >
+                  開始日
+                </label>
+                <input
+                  type="date"
+                  name="startDate"
+                  id="startDate"
+                  value={startDate}
+                  onChange={handleStartDateChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
+                />
+              </div>
+              <div className="mt-2">
+                <label htmlFor="endDate" className="block text-sm font-medium">
+                  終了日
+                </label>
+                <input
+                  type="date"
+                  name="endDate"
+                  id="endDate"
+                  value={endDate}
+                  onChange={handleEndDateChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"
+                />
+              </div>
             </div>
           </div>
-          <div className="mt-4 flex justify-end gap-2">
+
+          <div className="mt-6 border-t pt-4">
+            <p className="text-sm font-medium text-gray-700">
+              試合数で絞り込み
+            </p>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                onClick={() => handleGameCountFilter(50)}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                50戦
+              </button>
+              <button
+                onClick={() => handleGameCountFilter(100)}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                100戦
+              </button>
+              <button
+                onClick={() => handleGameCountFilter(200)}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                200戦
+              </button>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                type="number"
+                value={customGames}
+                onChange={(e) => setCustomGames(e.target.value)}
+                placeholder="指定"
+                className="block w-24 rounded-md border-gray-300 shadow-sm sm:text-sm"
+              />
+              <button
+                onClick={() => handleGameCountFilter(Number(customGames))}
+                className="rounded-md border p-2 text-sm hover:bg-gray-100"
+              >
+                適用
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-end gap-2 border-t pt-4">
             <button
               type="button"
               onClick={clearFilter}

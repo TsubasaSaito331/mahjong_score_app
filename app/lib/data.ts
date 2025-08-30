@@ -69,9 +69,11 @@ export async function fetchFilteredGameResults(
   startDate?: string,
   endDate?: string,
   playerIds?: string[],
+  limit?: number,
 ) {
   noStore();
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+  const itemsPerPage = limit || ITEMS_PER_PAGE;
+  const offset = (currentPage - 1) * itemsPerPage;
 
   try {
     const userId = cookies().get('user')?.value;
@@ -118,7 +120,7 @@ export async function fetchFilteredGameResults(
         }
       }
 
-      sqlQuery += ` ORDER BY Date DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}`;
+      sqlQuery += ` ORDER BY Date DESC LIMIT ${itemsPerPage} OFFSET ${offset}`;
 
       const gameResults = await sql.query(sqlQuery, params);
       return gameResults.rows;
