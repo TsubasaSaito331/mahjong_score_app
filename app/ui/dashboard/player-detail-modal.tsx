@@ -66,6 +66,71 @@ export default function PlayerDetailModal({
   const [sortedHeadToHead, setSortedHeadToHead] = useState<HeadToHeadResult[]>(
     [],
   );
+
+  const calculateGamePoints = (
+    gamePlayers: { id: string; score: number }[],
+  ) => {
+    const sortedGamePlayers = [...gamePlayers].sort(
+      (a, b) => b.score - a.score,
+    );
+
+    const RANKING_POINTS = [
+      rankingPoints * 1.5 + bonusPoints * 4,
+      rankingPoints * 0.5,
+      rankingPoints * -0.5,
+      rankingPoints * -1.5,
+    ];
+
+    const playersWithPoints: any[] = sortedGamePlayers.map((p) => ({
+      ...p,
+    }));
+
+    if (playersWithPoints.length === 0) {
+      return [];
+    }
+
+    let rank = 1;
+    playersWithPoints[0].rank = rank;
+    playersWithPoints[0].point =
+      (playersWithPoints[0].score +
+        RANKING_POINTS[0] -
+        bonusPoints -
+        startPoints) /
+      1000;
+
+    for (let i = 1; i < playersWithPoints.length; i++) {
+      if (playersWithPoints[i].score === playersWithPoints[i - 1].score) {
+        playersWithPoints[i].rank = rank;
+        const averageRankingPoint =
+          (RANKING_POINTS[rank - 1] + RANKING_POINTS[rank]) / 2;
+
+        playersWithPoints[i].point =
+          (playersWithPoints[i].score +
+            averageRankingPoint -
+            bonusPoints -
+            startPoints) /
+          1000;
+        playersWithPoints[i - 1].point =
+          (playersWithPoints[i - 1].score +
+            averageRankingPoint -
+            bonusPoints -
+            startPoints) /
+          1000;
+        rank++;
+      } else {
+        rank++;
+        playersWithPoints[i].rank = rank;
+        playersWithPoints[i].point =
+          (playersWithPoints[i].score +
+            RANKING_POINTS[rank - 1] -
+            bonusPoints -
+            startPoints) /
+          1000;
+      }
+    }
+    return playersWithPoints;
+  };
+
   // 平均順位を計算
   const calculateAverageRank = () => {
     if (player.games === 0) return 0;
@@ -91,8 +156,8 @@ export default function PlayerDetailModal({
         games: {
           playerRank: number;
           opponentRank: number;
-          playerScore: number;
-          opponentScore: number;
+          playerPoint: number;
+          opponentPoint: number;
         }[];
       }
     >();
@@ -118,32 +183,31 @@ export default function PlayerDetailModal({
       const playerInfo = players.find((p) => p.id === player.id);
       if (!playerInfo) return;
 
-      // 順位を計算
-      const sortedScores = [...players].sort((a, b) => b.score - a.score);
-      const playerRank = sortedScores.findIndex((p) => p.id === player.id) + 1;
+      const playersWithPoints = calculateGamePoints(players);
+      const playerResult = playersWithPoints.find((p) => p.id === player.id);
+
+      if (!playerResult) return;
 
       // 他のプレイヤーとの対戦結果を記録
-      players.forEach((opponent) => {
-        if (opponent.id === player.id) return;
+      playersWithPoints.forEach((opponentResult) => {
+        if (opponentResult.id === player.id) return;
 
-        const opponentRank =
-          sortedScores.findIndex((p) => p.id === opponent.id) + 1;
         const opponentName =
-          allPlayers.find((p) => p.id === opponent.id)?.name || '不明';
+          allPlayers.find((p) => p.id === opponentResult.id)?.name || '不明';
 
-        if (!opponentStats.has(opponent.id)) {
-          opponentStats.set(opponent.id, {
-            opponentId: opponent.id,
+        if (!opponentStats.has(opponentResult.id)) {
+          opponentStats.set(opponentResult.id, {
+            opponentId: opponentResult.id,
             opponentName,
             games: [],
           });
         }
 
-        opponentStats.get(opponent.id)!.games.push({
-          playerRank,
-          opponentRank,
-          playerScore: playerInfo.score,
-          opponentScore: opponent.score,
+        opponentStats.get(opponentResult.id)!.games.push({
+          playerRank: playerResult.rank,
+          opponentRank: opponentResult.rank,
+          playerPoint: playerResult.point,
+          opponentPoint: opponentResult.point,
         });
       });
     });
@@ -158,7 +222,7 @@ export default function PlayerDetailModal({
         let totalPointDiff = 0;
 
         games.forEach(
-          ({ playerRank, opponentRank, playerScore, opponentScore }) => {
+          ({ playerRank, opponentRank, playerPoint, opponentPoint }) => {
             if (playerRank < opponentRank) {
               wins++;
             } else if (playerRank > opponentRank) {
@@ -166,67 +230,6 @@ export default function PlayerDetailModal({
             } else {
               draws++;
             }
-
-            // 順位点を考慮したポイント計算
-            const RANKING_POINTS = [
-              rankingPoints * 1.5 + bonusPoints * 4,
-              rankingPoints * 0.5,
-              rankingPoints * -0.5,
-              rankingPoints * -1.5,
-            ];
-
-            // プレイヤーのポイント計算
-            let playerPoint = 0;
-            if (playerRank === 1) {
-              playerPoint =
-                (playerScore + RANKING_POINTS[0] - bonusPoints - startPoints) /
-                1000;
-            } else if (playerRank === 2) {
-              playerPoint =
-                (playerScore + RANKING_POINTS[1] - bonusPoints - startPoints) /
-                1000;
-            } else if (playerRank === 3) {
-              playerPoint =
-                (playerScore + RANKING_POINTS[2] - bonusPoints - startPoints) /
-                1000;
-            } else {
-              playerPoint =
-                (playerScore + RANKING_POINTS[3] - bonusPoints - startPoints) /
-                1000;
-            }
-
-            // 対戦相手のポイント計算
-            let opponentPoint = 0;
-            if (opponentRank === 1) {
-              opponentPoint =
-                (opponentScore +
-                  RANKING_POINTS[0] -
-                  bonusPoints -
-                  startPoints) /
-                1000;
-            } else if (opponentRank === 2) {
-              opponentPoint =
-                (opponentScore +
-                  RANKING_POINTS[1] -
-                  bonusPoints -
-                  startPoints) /
-                1000;
-            } else if (opponentRank === 3) {
-              opponentPoint =
-                (opponentScore +
-                  RANKING_POINTS[2] -
-                  bonusPoints -
-                  startPoints) /
-                1000;
-            } else {
-              opponentPoint =
-                (opponentScore +
-                  RANKING_POINTS[3] -
-                  bonusPoints -
-                  startPoints) /
-                1000;
-            }
-
             totalPointDiff += playerPoint - opponentPoint;
           },
         );
@@ -338,53 +341,19 @@ export default function PlayerDetailModal({
     }
 
     playerGames.forEach((game) => {
-      let score = 0;
-      let rawScore = 0;
-
-      // プレイヤーの風と得点を特定
-      if (game.eastplayer === player.id) {
-        rawScore = game.eastplayerscore;
-      } else if (game.southplayer === player.id) {
-        rawScore = game.southplayerscore;
-      } else if (game.westplayer === player.id) {
-        rawScore = game.westplayerscore;
-      } else if (game.northplayer === player.id) {
-        rawScore = game.northplayerscore;
-      }
-
-      // 順位点を計算
-      const allScores = [
-        game.eastplayerscore,
-        game.southplayerscore,
-        game.westplayerscore,
-        game.northplayerscore,
-      ];
-      const sortedScores = [...allScores].sort((a, b) => b - a);
-      const playerRank = sortedScores.indexOf(rawScore) + 1;
-
-      // 同点の場合の処理
-      const RANKING_POINTS = [
-        rankingPoints * 1.5 + bonusPoints * 4,
-        rankingPoints * 0.5,
-        rankingPoints * -0.5,
-        rankingPoints * -1.5,
+      const players = [
+        { id: game.eastplayer, score: game.eastplayerscore },
+        { id: game.southplayer, score: game.southplayerscore },
+        { id: game.westplayer, score: game.westplayerscore },
+        { id: game.northplayer, score: game.northplayerscore },
       ];
 
-      if (playerRank === 1) {
-        score =
-          (rawScore + RANKING_POINTS[0] - bonusPoints - startPoints) / 1000;
-      } else if (playerRank === 2) {
-        score =
-          (rawScore + RANKING_POINTS[1] - bonusPoints - startPoints) / 1000;
-      } else if (playerRank === 3) {
-        score =
-          (rawScore + RANKING_POINTS[2] - bonusPoints - startPoints) / 1000;
-      } else {
-        score =
-          (rawScore + RANKING_POINTS[3] - bonusPoints - startPoints) / 1000;
-      }
+      const playersWithPoints = calculateGamePoints(players);
+      const playerResult = playersWithPoints.find((p) => p.id === player.id);
 
-      cumulativeScore += score;
+      if (playerResult) {
+        cumulativeScore += playerResult.point;
+      }
 
       // 日付をフォーマット
       const formattedDate = new Date(game.date).toLocaleDateString('ja-JP', {

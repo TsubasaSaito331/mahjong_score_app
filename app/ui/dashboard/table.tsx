@@ -51,17 +51,11 @@ export default function Table({
 
         if (playerInGame) {
           games++;
-          rawscore += playerInGame.score;
+          rawscore += (playerInGame.score - startPoints - bonusPoints) / 1000;
 
-          const sortedScores = [...gamePlayers].sort(
+          const sortedGamePlayers = [...gamePlayers].sort(
             (a, b) => b.score - a.score,
           );
-          const rank = sortedScores.findIndex((p) => p.id === player.id) + 1;
-
-          if (rank === 1) firstnum++;
-          else if (rank === 2) secondnum++;
-          else if (rank === 3) thirdnum++;
-          else fourthnum++;
 
           const RANKING_POINTS = [
             rankingPoints * 1.5 + bonusPoints * 4,
@@ -70,40 +64,67 @@ export default function Table({
             rankingPoints * -1.5,
           ];
 
-          let gameTotalScore = 0;
-          if (rank === 1) {
-            gameTotalScore =
-              (playerInGame.score +
-                RANKING_POINTS[0] -
-                bonusPoints -
-                startPoints) /
-              1000;
-          } else if (rank === 2) {
-            gameTotalScore =
-              (playerInGame.score +
-                RANKING_POINTS[1] -
-                bonusPoints -
-                startPoints) /
-              1000;
-          } else if (rank === 3) {
-            gameTotalScore =
-              (playerInGame.score +
-                RANKING_POINTS[2] -
-                bonusPoints -
-                startPoints) /
-              1000;
-          } else {
-            gameTotalScore =
-              (playerInGame.score +
-                RANKING_POINTS[3] -
-                bonusPoints -
-                startPoints) /
-              1000;
+          const playersWithPoints: any[] = sortedGamePlayers.map((p) => ({
+            ...p,
+          }));
+
+          let rank = 1;
+          playersWithPoints[0].rank = rank;
+          playersWithPoints[0].point =
+            (playersWithPoints[0].score +
+              RANKING_POINTS[0] -
+              bonusPoints -
+              startPoints) /
+            1000;
+
+          for (let i = 1; i < playersWithPoints.length; i++) {
+            if (playersWithPoints[i].score === playersWithPoints[i - 1].score) {
+              playersWithPoints[i].rank = rank;
+              const averageRankingPoint =
+                (RANKING_POINTS[rank - 1] + RANKING_POINTS[rank]) / 2;
+
+              playersWithPoints[i].point =
+                (playersWithPoints[i].score +
+                  averageRankingPoint -
+                  bonusPoints -
+                  startPoints) /
+                1000;
+              playersWithPoints[i - 1].point =
+                (playersWithPoints[i - 1].score +
+                  averageRankingPoint -
+                  bonusPoints -
+                  startPoints) /
+                1000;
+              rank++;
+            } else {
+              rank++;
+              playersWithPoints[i].rank = rank;
+              playersWithPoints[i].point =
+                (playersWithPoints[i].score +
+                  RANKING_POINTS[rank - 1] -
+                  bonusPoints -
+                  startPoints) /
+                1000;
+            }
           }
 
-          totalscore += gameTotalScore;
-          if (gameTotalScore > maxscore) {
-            maxscore = gameTotalScore;
+          const thisPlayerResult = playersWithPoints.find(
+            (p) => p.id === player.id,
+          );
+
+          if (thisPlayerResult) {
+            const gameTotalScore = thisPlayerResult.point;
+            const playerRank = thisPlayerResult.rank;
+
+            if (playerRank === 1) firstnum++;
+            else if (playerRank === 2) secondnum++;
+            else if (playerRank === 3) thirdnum++;
+            else fourthnum++;
+
+            totalscore += gameTotalScore;
+            if (playerInGame.score > maxscore) {
+              maxscore = playerInGame.score;
+            }
           }
         }
       });
