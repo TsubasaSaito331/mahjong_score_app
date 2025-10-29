@@ -51,7 +51,7 @@ export default function Table({
 
         if (playerInGame) {
           games++;
-          rawscore += (playerInGame.score - startPoints - bonusPoints) / 1000;
+          rawscore += (playerInGame.score - startPoints) / 1000;
 
           const sortedGamePlayers = [...gamePlayers].sort(
             (a, b) => b.score - a.score,
