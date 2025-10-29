@@ -65,6 +65,7 @@ export default async function Page({
     startDate?: string;
     endDate?: string;
     limit?: string;
+    minGames?: string;
   };
 }) {
   const query = searchParams?.query || '';
@@ -72,6 +73,7 @@ export default async function Page({
   const startDate = searchParams?.startDate;
   const endDate = searchParams?.endDate;
   const limit = Number(searchParams?.limit) || undefined;
+  const minGamesParam = searchParams?.minGames;
   const title = cookies().get('userName')?.value;
   const bonusPoints = parseInt(cookies().get('BOUNUS_POINTS')?.value || '5000');
   const rankingPoints = parseInt(
@@ -79,6 +81,19 @@ export default async function Page({
   );
   const startPoints = parseInt(cookies().get('START_POINTS')?.value || '25000');
   const allPlayers = await fetchAllPlayers();
+
+  const formatDate = (d?: string) => (d ? d.split('-').join('/') : '');
+  let periodLabel = '';
+  if (startDate && endDate) {
+    periodLabel = `${formatDate(startDate)}-${formatDate(endDate)}`;
+  } else if (startDate && !endDate) {
+    periodLabel = `${formatDate(startDate)}以降`;
+  } else if (!startDate && endDate) {
+    periodLabel = `${formatDate(endDate)}以前`;
+  }
+  const limitLabel = searchParams?.limit ? `直近${searchParams?.limit}試合` : '';
+  const minGamesLabel = minGamesParam ? `${minGamesParam}試合以上参加` : '';
+  const activeLabels = [periodLabel, limitLabel, minGamesLabel].filter(Boolean) as string[];
 
   return (
     <div className="w-full">
@@ -90,6 +105,18 @@ export default async function Page({
         <RegisterGame players={allPlayers} startPoints={startPoints} />
         <Filter />
       </div>
+      {activeLabels.length > 0 && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-700">
+          {activeLabels.map((label) => (
+            <span
+              key={label}
+              className="rounded-md border bg-gray-50 px-2 py-1"
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="overflow-x-auto">
         <Suspense
           key={query + currentPage + startDate + endDate + limit}
