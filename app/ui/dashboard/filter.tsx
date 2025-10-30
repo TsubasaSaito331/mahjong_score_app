@@ -5,6 +5,24 @@ import { useState, useEffect } from 'react';
 import Modal from '@/app/components/Modal';
 import { FaFilter } from 'react-icons/fa';
 
+// JST(Asia/Tokyo)で日付(YYYY-MM-DD)を扱うユーティリティ
+const JPN_TZ = 'Asia/Tokyo';
+const pad2 = (n: number) => String(n).padStart(2, '0');
+const formatYMD = (y: number, m: number, d: number) => `${y}-${pad2(m)}-${pad2(d)}`;
+const getLastDayOfMonth = (y: number, m1to12: number) => new Date(Date.UTC(y, m1to12, 0)).getUTCDate();
+const getTodayInJST = () => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: JPN_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const year = Number(parts.find((p) => p.type === 'year')?.value);
+  const month = Number(parts.find((p) => p.type === 'month')?.value);
+  const day = Number(parts.find((p) => p.type === 'day')?.value);
+  return { year, month, day };
+};
+
 export default function Filter() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
@@ -29,27 +47,13 @@ export default function Filter() {
     let period = '';
 
     if (sDate && eDate) {
-      const today = new Date();
-      const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1)
-        .toISOString()
-        .split('T')[0];
-      const thisMonthEnd = new Date(
-        today.getFullYear(),
-        today.getMonth() + 1,
-        0,
-      )
-        .toISOString()
-        .split('T')[0];
-      const lastMonthStart = new Date(
-        today.getFullYear(),
-        today.getMonth() - 1,
-        1,
-      )
-        .toISOString()
-        .split('T')[0];
-      const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0)
-        .toISOString()
-        .split('T')[0];
+      const { year, month } = getTodayInJST();
+      const thisMonthStart = formatYMD(year, month, 1);
+      const thisMonthEnd = formatYMD(year, month, getLastDayOfMonth(year, month));
+      const prevMonth = month === 1 ? 12 : month - 1;
+      const prevYear = month === 1 ? year - 1 : year;
+      const lastMonthStart = formatYMD(prevYear, prevMonth, 1);
+      const lastMonthEnd = formatYMD(prevYear, prevMonth, getLastDayOfMonth(prevYear, prevMonth));
 
       if (sDate === thisMonthStart && eDate === thisMonthEnd) {
         period = 'this_month';
@@ -62,10 +66,11 @@ export default function Filter() {
 
   const handleMonthSelect = (year: number, month: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    const start = new Date(year, month, 1);
-    const end = new Date(year, month + 1, 0);
-    params.set('startDate', start.toISOString().split('T')[0]);
-    params.set('endDate', end.toISOString().split('T')[0]);
+    const month1to12 = month + 1;
+    const startStr = formatYMD(year, month1to12, 1);
+    const endStr = formatYMD(year, month1to12, getLastDayOfMonth(year, month1to12));
+    params.set('startDate', startStr);
+    params.set('endDate', endStr);
     params.delete('limit');
     replace(`${pathname}?${params.toString()}`);
     setShowMonthPicker(false);
@@ -92,28 +97,48 @@ export default function Filter() {
   ) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete('limit');
-    const today = new Date();
+    const { year, month } = getTodayInJST();
 
     if (type === 'this_month') {
-      const start = new Date(today.getFullYear(), today.getMonth(), 1);
-      const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      params.set('startDate', start.toISOString().split('T')[0]);
-      params.set('endDate', end.toISOString().split('T')[0]);
+      const startStr = formatYMD(year, month, 1);
+      const endStr = formatYMD(year, month, getLastDayOfMonth(year, month));
+      params.set('startDate', startStr);
+      params.set('endDate', endStr);
     } else if (type === 'last_month') {
-      const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-      const end = new Date(today.getFullYear(), today.getMonth(), 0);
-      params.set('startDate', start.toISOString().split('T')[0]);
-      params.set('endDate', end.toISOString().split('T')[0]);
+      const prevMonth = month === 1 ? 12 : month - 1;
+      const prevYear = month === 1 ? year - 1 : year;
+      const startStr = formatYMD(prevYear, prevMonth, 1);
+      const endStr = formatYMD(prevYear, prevMonth, getLastDayOfMonth(prevYear, prevMonth));
+      params.set('startDate', startStr);
+      params.set('endDate', endStr);
     } else if (type === 'custom') {
-      if (sDate) {
+      const currentStart = searchParams.get('startDate') || '';
+      const currentEnd = searchParams.get('endDate') || '';
+
+      const nextStart = sDate ?? currentStart;
+      const nextEnd = eDate ?? currentEnd;
+
+      if (sDate && nextEnd && sDate > nextEnd) {
+        params.delete('endDate');
         params.set('startDate', sDate);
-      } else {
+      } else if (eDate && nextStart && eDate < nextStart) {
         params.delete('startDate');
-      }
-      if (eDate) {
         params.set('endDate', eDate);
       } else {
-        params.delete('endDate');
+        if (sDate !== undefined) {
+          if (sDate) {
+            params.set('startDate', sDate);
+          } else {
+            params.delete('startDate');
+          }
+        }
+        if (eDate !== undefined) {
+          if (eDate) {
+            params.set('endDate', eDate);
+          } else {
+            params.delete('endDate');
+          }
+        }
       }
     }
 
